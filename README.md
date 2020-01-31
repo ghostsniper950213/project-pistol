@@ -1,5 +1,5 @@
 # 手枪计划
-一款为iOS而生的的e站阅读器。
+一款为 iOS 而生的的 e 站阅读器。
 
 # project-pistol
 An e-hentai/exhentai reader for iOS.
