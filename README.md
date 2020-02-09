@@ -15,3 +15,9 @@ The project is still in very early development and will not be open sourced yet.
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/read.jpg" width="200"/> 
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/download.jpg" width="200"/>
 </div>
+
+<br /><br />
+
+如果没用过 GitHub，请点击页面上方的 “* releases”，下载 “Assets” 下的 zip 压缩包，解压后阅读 readme.txt。
+
+If you haven't used GitHub before, please click "* releases" at the top of this page. Download the zip archive under "Assets", and read the readme.txt after decompressing it.
