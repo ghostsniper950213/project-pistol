@@ -4,9 +4,9 @@
 An e-hentai/exhentai reader for iOS.
 
 ### 注意 | Alert
-目前项目还处于极早期开发状态，暂不对其进行开源。
+目前项目还处于极早期开发状态。
 
-The project is still in very early development and will not be open sourced yet.
+The project is still in very early development.
 
 ### 截图 | Screenshots
 <div>
