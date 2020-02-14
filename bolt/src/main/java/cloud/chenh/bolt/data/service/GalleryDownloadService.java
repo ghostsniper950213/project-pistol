@@ -5,19 +5,17 @@ import cloud.chenh.bolt.data.dao.GalleryDownloadDao;
 import cloud.chenh.bolt.data.model.GalleryDetail;
 import cloud.chenh.bolt.data.model.GalleryDownload;
 import cloud.chenh.bolt.data.parser.GalleryDetailParser;
+import cloud.chenh.bolt.exception.DownloadStopException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +23,7 @@ public class GalleryDownloadService {
 
     private static final String DOWNLOAD_DIR = "./download/";
 
-    private Thread downloadThread;
-
-    private AtomicBoolean downloading = new AtomicBoolean(false);
+    private String downloadingUrl;
 
     @Autowired
     private GalleryDownloadDao galleryDownloadDao;
@@ -44,13 +40,19 @@ public class GalleryDownloadService {
         return galleryDownloads;
     }
 
+    public List<GalleryDownload> getAllSortedReversed() {
+        List<GalleryDownload> galleryDownloads = getAllSorted();
+        Collections.reverse(galleryDownloads);
+        return galleryDownloads;
+    }
+
     public GalleryDownload get(String detailUrl) {
         return galleryDownloadDao.get(detailUrl);
     }
 
     public void add(GalleryDownload galleryDownload) {
         galleryDownload.getDetail().setDownload(true);
-        galleryDownloadDao.save(galleryDownload);
+        save(galleryDownload);
         downloadNext();
     }
 
@@ -58,9 +60,13 @@ public class GalleryDownloadService {
         galleryDownloadDao.save(galleryDownload);
     }
 
+    public void save(Collection<GalleryDownload> galleryDownloads) {
+        galleryDownloadDao.save(galleryDownloads);
+    }
+
     public void remove(List<String> detailUrls) {
-        if (downloadThread != null && downloadThread.isAlive() && detailUrls.contains(downloadThread.getName())) {
-            downloadThread.interrupt();
+        if (detailUrls.contains(downloadingUrl)) {
+            downloadingUrl = null;
         }
         galleryDownloadDao.remove(detailUrls);
         downloadNext();
@@ -81,17 +87,17 @@ public class GalleryDownloadService {
                 }
             }
         });
-        galleryDownloadDao.save(galleryDownloads);
+        save(galleryDownloads);
         downloadNext();
     }
 
     public void pause(List<String> detailUrls) {
-        if (downloadThread != null && downloadThread.isAlive() && detailUrls.contains(downloadThread.getName())) {
-            downloadThread.interrupt();
+        if (detailUrls.contains(downloadingUrl)) {
+            downloadingUrl = null;
         }
         List<GalleryDownload> galleryDownloads = galleryDownloadDao.get(detailUrls);
         galleryDownloads.forEach(galleryDownload -> galleryDownload.setStatus(GalleryDownload.StatusEnum.PAUSED));
-        galleryDownloadDao.save(galleryDownloads);
+        save(galleryDownloads);
         downloadNext();
     }
 
@@ -104,12 +110,16 @@ public class GalleryDownloadService {
     }
 
     public synchronized void downloadNext() {
-        if (downloading.compareAndSet(false, true)) {
+        if (StringUtils.isBlank(downloadingUrl)) {
             GalleryDownload galleryDownload = getDownloadable();
             if (galleryDownload != null) {
-                download(galleryDownload);
-            } else {
-                downloading.set(false);
+                downloadingUrl = galleryDownload.getDetail().getDetailUrl();
+                new Thread(() -> {
+                    try {
+                        download(galleryDownload);
+                    } catch (DownloadStopException ignored) {
+                    }
+                }).start();
             }
         }
     }
@@ -123,27 +133,52 @@ public class GalleryDownloadService {
                 .orElse(null);
     }
 
-    private void download(GalleryDownload galleryDownload) {
-        if (downloadThread != null && downloadThread.isAlive()) {
-            downloadThread.interrupt();
+    private void saveAfterCheck(GalleryDownload galleryDownload) throws DownloadStopException {
+        if (!galleryDownload.getDetail().getDetailUrl().equals(downloadingUrl)) {
+            throw new DownloadStopException();
+        }
+        save(galleryDownload);
+    }
+
+    private void download(GalleryDownload galleryDownload) throws DownloadStopException {
+        GalleryDetail detail = galleryDownload.getDetail();
+
+        String detailUrl = detail.getDetailUrl();
+        String coverUrl = detail.getCoverUrl();
+
+        String cover = DOWNLOAD_DIR + "/" + galleryDownload.getTimestamp() + "/cover.jpg";
+        for (int i = 0; i < GalleryConstants.DEFAULT_RETRY; i++) {
+            if (galleryDownload.getCover() != null) {
+                continue;
+            }
+            try {
+                InputStream coverStream = httpClientService.doGetStream(coverUrl, new HashMap<>());
+                FileUtils.copyInputStreamToFile(coverStream, new File(cover));
+                galleryDownload.setCover(cover);
+
+                saveAfterCheck(galleryDownload);
+                break;
+            } catch (IOException ignored) {
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException ignored1) {
+                }
+            }
         }
 
-        downloadThread = new Thread(() -> {
-            GalleryDetail detail = galleryDownload.getDetail();
-
-            String detailUrl = detail.getDetailUrl();
-            String coverUrl = detail.getCoverUrl();
-
-            String cover = DOWNLOAD_DIR + "/" + galleryDownload.getTimestamp() + "/cover.jpg";
-            for (int i = 0; i < GalleryConstants.DEFAULT_RETRY; i++) {
-                if (galleryDownload.getCover() != null) {
-                    continue;
-                }
+        String[] imagePages = new String[galleryDownload.getImages().length];
+        int thumbPages = detail.getThumbPages();
+        for (int i = 0; i < thumbPages; i++) {
+            for (int j = 0; j < GalleryConstants.DEFAULT_RETRY; j++) {
                 try {
-                    InputStream coverStream = httpClientService.doGetStream(coverUrl, new HashMap<>());
-                    FileUtils.copyInputStreamToFile(coverStream, new File(cover));
-                    galleryDownload.setCover(cover);
-                    galleryDownloadDao.save(galleryDownload);
+                    Map<String, String> params = new HashMap<>();
+                    params.put("p", String.valueOf(i));
+                    params.put("inline_set", "ts_m");
+                    String detailHtml = httpClientService.doGet(detailUrl, params);
+                    List<String> imagePagesOfPage = GalleryDetailParser.parseImagePages(detailHtml).getElements();
+                    for (int k = 0; k < imagePagesOfPage.size(); k++) {
+                        imagePages[k + i * 40] = imagePagesOfPage.get(k);
+                    }
                     break;
                 } catch (IOException ignored) {
                     try {
@@ -152,76 +187,51 @@ public class GalleryDownloadService {
                     }
                 }
             }
+        }
 
-            String[] imagePages = new String[galleryDownload.getImages().length];
-            int thumbPages = detail.getThumbPages();
-            for (int i = 0; i < thumbPages; i++) {
-                for (int j = 0; j < GalleryConstants.DEFAULT_RETRY; j++) {
-                    try {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("p", String.valueOf(i));
-                        params.put("inline_set", "ts_m");
-                        String detailHtml = httpClientService.doGet(detailUrl, params);
-                        List<String> imagePagesOfPage = GalleryDetailParser.parseImagePages(detailHtml).getElements();
-                        for (int k = 0; k < imagePagesOfPage.size(); k++) {
-                            imagePages[k + i * 40] = imagePagesOfPage.get(k);
-                        }
-                        break;
-                    } catch (IOException ignored) {
-                        try {
-                            TimeUnit.SECONDS.sleep(10);
-                        } catch (InterruptedException ignored1) {
-                        }
+        for (int i = 0; i < imagePages.length; i++) {
+            if (galleryDownload.getImages()[i] != null) {
+                continue;
+            }
+            String imagePage = imagePages[i];
+            for (int j = 0; j < GalleryConstants.DEFAULT_RETRY; j++) {
+                try {
+                    if (imagePage == null) {
+                        continue;
                     }
-                }
-            }
-
-            for (int i = 0; i < imagePages.length; i++) {
-                if (galleryDownload.getImages()[i] != null) {
-                    continue;
-                }
-                String imagePage = imagePages[i];
-                for (int j = 0; j < GalleryConstants.DEFAULT_RETRY; j++) {
-                    try {
-                        if (imagePage == null) {
-                            continue;
-                        }
-                        String image = DOWNLOAD_DIR + "/" + galleryDownload.getTimestamp() + "/" + i + ".jpg";
-                        String imageUrl = galleryDetailService.getImageUrl(imagePage);
-                        InputStream imageStream = httpClientService.doGetStream(imageUrl, new HashMap<>());
-                        FileUtils.copyInputStreamToFile(imageStream, new File(image));
-                        galleryDownload.getImages()[i] = image;
-                        galleryDownloadDao.save(galleryDownload);
-                        break;
-                    } catch (IOException ignored) {
-                        try {
-                            TimeUnit.SECONDS.sleep(10);
-                        } catch (InterruptedException ignored1) {
-                        }
-                    }
-                }
-            }
-
-            galleryDownload.setStatus(GalleryDownload.StatusEnum.FINISHED);
-            if (galleryDownload.getCover() == null) {
-                galleryDownload.setStatus(GalleryDownload.StatusEnum.FAILED);
-            }
-            String[] imgs = galleryDownload.getImages();
-            for (String img : imgs) {
-                if (img == null) {
-                    galleryDownload.setStatus(GalleryDownload.StatusEnum.FAILED);
+                    String image = DOWNLOAD_DIR + "/" + galleryDownload.getTimestamp() + "/" + i + ".jpg";
+                    String imageUrl = galleryDetailService.getImageUrl(imagePage);
+                    InputStream imageStream = httpClientService.doGetStream(imageUrl, new HashMap<>());
+                    FileUtils.copyInputStreamToFile(imageStream, new File(image));
+                    galleryDownload.getImages()[i] = image;
+                    saveAfterCheck(galleryDownload);
                     break;
+                } catch (IOException ignored) {
+                    try {
+                        TimeUnit.SECONDS.sleep(10);
+                    } catch (InterruptedException ignored1) {
+                    }
                 }
             }
+        }
 
-            galleryDownloadDao.save(galleryDownload);
+        galleryDownload.setStatus(GalleryDownload.StatusEnum.FINISHED);
+        if (galleryDownload.getCover() == null) {
+            galleryDownload.setStatus(GalleryDownload.StatusEnum.FAILED);
+        }
+        String[] imgs = galleryDownload.getImages();
+        for (String img : imgs) {
+            if (img == null) {
+                galleryDownload.setStatus(GalleryDownload.StatusEnum.FAILED);
+                break;
+            }
+        }
 
-            downloading.set(false);
+        saveAfterCheck(galleryDownload);
 
-            downloadNext();
-        });
-        downloadThread.setName(galleryDownload.getDetail().getDetailUrl());
-        downloadThread.start();
+        downloadingUrl = null;
+
+        downloadNext();
     }
 
 }

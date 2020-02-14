@@ -19,7 +19,7 @@ public class GalleryUserService {
     @Autowired
     private ConfigService configService;
 
-    public Map<String, String> login(String username, String password) throws IOException {
+    public Map<String, String> login(String username, String password) throws IOException, LoginFailureException {
         httpClientService.clear();
 
         Map<String, String> params = new HashMap<>();

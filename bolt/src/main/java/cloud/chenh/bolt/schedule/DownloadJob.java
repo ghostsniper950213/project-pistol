@@ -18,7 +18,7 @@ public class DownloadJob {
 
     @Scheduled(fixedRate = 1000)
     public void sendWs() {
-        downloadWs.sendMessage(JSONObject.toJSONString(galleryDownloadService.getAllSorted()));
+        downloadWs.sendMessage(JSONObject.toJSONString(galleryDownloadService.getAllSortedReversed()));
     }
 
 }

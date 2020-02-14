@@ -22,7 +22,7 @@ public class GalleryOverviewParser {
 
         Elements tds = document.select(".ptt td");
         int totalPages = Integer.parseInt(tds.get(tds.size() - 2).selectFirst("a").text());
-        int pageNumber = Integer.parseInt(document.selectFirst(".ptds a").text()) - 1;
+        int pageNumber = Integer.parseInt(document.selectFirst(".ptds a").text().split("-")[0]) - 1;
 
         Elements trs = document.selectFirst(".itg").child(0).children();
         trs.removeIf(tr -> tr.selectFirst(".gl1e") == null);

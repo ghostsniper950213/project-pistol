@@ -126,6 +126,9 @@ public class GalleryDetailParser {
 
     public static SimplePage<String> parseImagePages(String html) {
         Document document = Jsoup.parse(html);
+        if (document.selectFirst(".ptt td") == null) {
+            return new SimplePage<>(0, 0, new ArrayList<>());
+        }
         Elements thumbTds = document.select(".ptt td");
         int thumbPages = Integer.parseInt(thumbTds.get(thumbTds.size() - 2).selectFirst("a").text());
         int pageNumber = Integer.parseInt(document.selectFirst(".ptds a").text()) - 1;

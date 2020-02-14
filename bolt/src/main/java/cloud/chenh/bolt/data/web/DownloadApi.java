@@ -34,7 +34,7 @@ public class DownloadApi {
 
     @GetMapping
     public OperationResult downloads() {
-        return OperationResult.success(galleryDownloadService.getAllSorted());
+        return OperationResult.success(galleryDownloadService.getAllSortedReversed());
     }
 
     @PostMapping("remove")
