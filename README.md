@@ -3,6 +3,24 @@
 
 An e-hentai/exhentai reader for iOS.
 
+### 技术 | Techniques
+##### 后端 | Backend
+- Java
+- Spring Boot
+- jsoup
+- HttpClient
+
+##### 前端 | Backend
+- Vue
+- vue-lazyload
+- vue-navigation
+- Font Awesome
+
+### 问题 | Issues
+无法完全屏蔽标签。
+
+Tags cannot be completely blocked.
+
 ### 注意 | Alert
 目前项目还处于极早期开发状态。
 
@@ -12,6 +30,7 @@ The project is still in very early development.
 <div>
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/home.jpg" width="200"/>
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/detail.jpg" width="200"/> 
+  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/comment.jpg" width="200"/> 
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/read.jpg" width="200"/> 
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/download.jpg" width="200"/>
 </div>
