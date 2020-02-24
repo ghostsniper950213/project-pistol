@@ -35,8 +35,22 @@ The project is still in very early development.
   <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/download.jpg" width="200"/>
 </div>
 
-<br /><br />
-
+### 建议 | Advise
 如果没用过 GitHub，请点击页面上方的 “* releases”，下载 “Assets” 下的 zip 压缩包，解压后阅读 readme.txt。
 
 If you haven't used GitHub before, please click "* releases" at the top of this page. Download the zip archive under "Assets", and read the readme.txt after decompressing it.
+
+### 使用方式 | How
+1. 将压缩包解压
+2. 如果需要使用阴影袜子们，编辑 config.txt，填写 host 和 port 为软件配置（已填好默认值），否则删除值
+3. 双击 run.cmd 来运行程序
+4. 尝试获取本机局域网 ip 地址，例如使用 ipconfig 命令
+5. 在手机浏览器地址栏填入 ip:8848（例如 192.168.1.1:8848）来访问
+
+<br />
+
+1. Decompress the compressed package
+2. If you need to use ShadowSocks, edit config.txt and fill the software configuration in host and port (the default values have been filled in), otherwise delete the values
+3. Double-click run.cmd to run the program
+4. Try to get the local LAN IP address, such as using the ipconfig command
+5. Enter ip:8848 (e.g. 192.168.1.1:8848) in the address bar of your mobile browser to access
