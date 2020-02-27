@@ -33,15 +33,18 @@ public class GalleryImageService {
         }
     }
 
-    public void writeLocalImage(String localPath, HttpServletResponse response) throws IOException {
-        File file = new File(localPath);
-        if (!file.exists()) {
-            return;
+    public void writeLocalImage(String localPath, HttpServletResponse response) {
+        try {
+            File file = new File(localPath);
+            if (!file.exists()) {
+                return;
+            }
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(FileUtils.readFileToByteArray(file));
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException ignored) {
         }
-        OutputStream outputStream = response.getOutputStream();
-        outputStream.write(FileUtils.readFileToByteArray(file));
-        outputStream.flush();
-        outputStream.close();
     }
 
 }

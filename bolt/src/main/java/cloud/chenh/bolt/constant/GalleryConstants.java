@@ -19,4 +19,6 @@ public class GalleryConstants {
 
     public static final Integer DEFAULT_RETRY = 3;
 
+    public static final Integer RETRY_AFTER_SECOND = 5;
+
 }

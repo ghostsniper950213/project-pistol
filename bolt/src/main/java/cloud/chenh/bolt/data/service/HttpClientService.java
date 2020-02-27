@@ -83,7 +83,7 @@ public class HttpClientService {
         return cookies;
     }
 
-    public synchronized String doGet(String url, Map<String, String> params) throws IOException {
+    public String doGet(String url, Map<String, String> params) throws IOException {
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
             uriBuilder.addParameters(buildParams(params));
@@ -121,7 +121,7 @@ public class HttpClientService {
         }
     }
 
-    public synchronized String doPost(String url, Map<String, String> params) throws IOException {
+    public String doPost(String url, Map<String, String> params) throws IOException {
         UrlEncodedFormEntity paramsEntity = new UrlEncodedFormEntity(buildParams(params), Charset.defaultCharset());
         HttpPost httpPost = new HttpPost(url);
         httpPost.setEntity(paramsEntity);

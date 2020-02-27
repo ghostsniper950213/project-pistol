@@ -4,7 +4,7 @@
 
     <top-bar title="用户" />
 
-    <div class="user-form">
+    <scroller class="user-form">
       <div class="login-title">
         <span>使用用户名与密码获取Cookie：</span>
       </div>
@@ -48,7 +48,7 @@
           <icon icon="save" />
         </btn>
       </div>
-    </div>
+    </scroller>
   </div>
 </template>
 
@@ -58,6 +58,7 @@ import Ipt from '@/components/Ipt'
 import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
 import TopBar from '@/components/TopBar'
+import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
 
@@ -68,7 +69,8 @@ export default {
     Ipt,
     Btn,
     Loading,
-    TopBar
+    TopBar,
+    Scroller
   },
   mounted() {
     this.loadCookies()

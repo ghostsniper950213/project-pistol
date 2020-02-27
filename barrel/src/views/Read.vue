@@ -3,7 +3,7 @@
     <loading v-show="isLoading" />
 
     <top-bar title="阅读" />
-    
+
     <bottom-bar>
       <div class="page-info">
         <div class="page-number">
@@ -35,6 +35,7 @@
         :key="i"
         :ref="i === 1? 'firstSlide' : null"
       >
+        <!-- :src="imgs[i - 1] ? localImageUrl(imgs[i - 1]) : loadingImg" -->
         <img
           v-if="download"
           :src="imgs[i - 1] ? localImageUrl(imgs[i - 1]) : loadingImg"

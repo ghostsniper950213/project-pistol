@@ -7,6 +7,7 @@ import cloud.chenh.bolt.data.model.GalleryDownload;
 import cloud.chenh.bolt.data.parser.GalleryDetailParser;
 import cloud.chenh.bolt.exception.DownloadStopException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,14 @@ public class GalleryDownloadService {
         if (detailUrls.contains(downloadingUrl)) {
             downloadingUrl = null;
         }
+        List<GalleryDownload> removeDownloads = galleryDownloadDao.get(detailUrls);
+        removeDownloads.forEach(download -> {
+            try {
+                FileUtils.deleteDirectory(new File(DOWNLOAD_DIR + "/" + download.getTimestamp()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         galleryDownloadDao.remove(detailUrls);
         downloadNext();
     }
@@ -133,12 +142,24 @@ public class GalleryDownloadService {
                 .orElse(null);
     }
 
-    private void saveAfterCheck(GalleryDownload galleryDownload) throws DownloadStopException {
+    private void checkAlive(GalleryDownload galleryDownload) throws DownloadStopException {
         if (!galleryDownload.getDetail().getDetailUrl().equals(downloadingUrl)) {
             throw new DownloadStopException();
         }
+    }
+
+    private void saveAfterCheck(GalleryDownload galleryDownload) throws DownloadStopException {
+        checkAlive(galleryDownload);
         save(galleryDownload);
     }
+
+    private void writeStreamAfterCheck(GalleryDownload galleryDownload, InputStream inputStream, File file)
+            throws DownloadStopException, IOException {
+
+        checkAlive(galleryDownload);
+        FileUtils.copyInputStreamToFile(inputStream, file);
+    }
+
 
     private void download(GalleryDownload galleryDownload) throws DownloadStopException {
         GalleryDetail detail = galleryDownload.getDetail();
@@ -146,21 +167,25 @@ public class GalleryDownloadService {
         String detailUrl = detail.getDetailUrl();
         String coverUrl = detail.getCoverUrl();
 
-        String cover = DOWNLOAD_DIR + "/" + galleryDownload.getTimestamp() + "/cover.jpg";
+        String cover = String.format(
+                "%s/%d/cover.%s",
+                DOWNLOAD_DIR,
+                galleryDownload.getTimestamp(),
+                FilenameUtils.getExtension(coverUrl)
+        );
         for (int i = 0; i < GalleryConstants.DEFAULT_RETRY; i++) {
             if (galleryDownload.getCover() != null) {
                 continue;
             }
             try {
                 InputStream coverStream = httpClientService.doGetStream(coverUrl, new HashMap<>());
-                FileUtils.copyInputStreamToFile(coverStream, new File(cover));
+                writeStreamAfterCheck(galleryDownload, coverStream, new File(cover));
                 galleryDownload.setCover(cover);
-
                 saveAfterCheck(galleryDownload);
                 break;
             } catch (IOException ignored) {
                 try {
-                    TimeUnit.SECONDS.sleep(10);
+                    TimeUnit.SECONDS.sleep(GalleryConstants.RETRY_AFTER_SECOND);
                 } catch (InterruptedException ignored1) {
                 }
             }
@@ -170,6 +195,7 @@ public class GalleryDownloadService {
         int thumbPages = detail.getThumbPages();
         for (int i = 0; i < thumbPages; i++) {
             for (int j = 0; j < GalleryConstants.DEFAULT_RETRY; j++) {
+                checkAlive(galleryDownload);
                 try {
                     Map<String, String> params = new HashMap<>();
                     params.put("p", String.valueOf(i));
@@ -182,7 +208,7 @@ public class GalleryDownloadService {
                     break;
                 } catch (IOException ignored) {
                     try {
-                        TimeUnit.SECONDS.sleep(10);
+                        TimeUnit.SECONDS.sleep(GalleryConstants.RETRY_AFTER_SECOND);
                     } catch (InterruptedException ignored1) {
                     }
                 }
@@ -199,16 +225,22 @@ public class GalleryDownloadService {
                     if (imagePage == null) {
                         continue;
                     }
-                    String image = DOWNLOAD_DIR + "/" + galleryDownload.getTimestamp() + "/" + i + ".jpg";
                     String imageUrl = galleryDetailService.getImageUrl(imagePage);
+                    String image = String.format(
+                            "%s/%d/%d.%s",
+                            DOWNLOAD_DIR,
+                            galleryDownload.getTimestamp(),
+                            i,
+                            FilenameUtils.getExtension(imageUrl)
+                    );
                     InputStream imageStream = httpClientService.doGetStream(imageUrl, new HashMap<>());
-                    FileUtils.copyInputStreamToFile(imageStream, new File(image));
+                    writeStreamAfterCheck(galleryDownload, imageStream, new File(image));
                     galleryDownload.getImages()[i] = image;
                     saveAfterCheck(galleryDownload);
                     break;
                 } catch (IOException ignored) {
                     try {
-                        TimeUnit.SECONDS.sleep(10);
+                        TimeUnit.SECONDS.sleep(GalleryConstants.RETRY_AFTER_SECOND);
                     } catch (InterruptedException ignored1) {
                     }
                 }

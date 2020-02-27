@@ -26,7 +26,7 @@
         </div>
     </modal>
 
-    <div class="detail" v-if="detail">
+    <scroller class="detail" v-if="detail">
       <div class="thumbs-row" @scroll="handleThumbsScroll">
         <img v-for="thumb of thumbs" :key="thumb" v-lazy="imageUrl(thumb)" @error="handleImgError" />
       </div>
@@ -107,7 +107,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </scroller>
 
   </div>
 </template>
@@ -119,6 +119,7 @@ import Loading from '@/components/Loading'
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import Modal from '@/components/Modal'
+import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
 import defaults from '@/data/defaults'
@@ -132,7 +133,8 @@ export default {
     Loading,
     TopBar,
     BottomBar,
-    Modal
+    Modal,
+    Scroller
   },
   mounted() {
     this.detailUrl = this.$route.query.detailUrl
@@ -295,8 +297,6 @@ export default {
   bottom: 40px;
   left: 0;
   right: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .thumbs-row {

@@ -10,7 +10,7 @@
       </div>
     </bottom-bar>
 
-    <div class="blocked-tags">
+    <scroller class="blocked-tags">
       <div
         class="blocked-tag"
         v-for="tag of blockedTags"
@@ -20,7 +20,7 @@
       >
         <span>{{ tag }}</span>
       </div>
-    </div>
+    </scroller>
   </div>
 </template>
 
@@ -28,6 +28,7 @@
 import Loading from '@/components/Loading'
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
+import Scroller from '@/components/Scroller'
 
 import { axios, urls } from '@/axios'
 
@@ -36,7 +37,8 @@ export default {
   components: {
     Loading,
     TopBar,
-    BottomBar
+    BottomBar,
+    Scroller
   },
   mounted() {
     this.fetchBlockedTags()
@@ -98,8 +100,6 @@ export default {
   right: 0;
   bottom: 40px;
   top: 40px;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .blocked-tag {

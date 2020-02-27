@@ -20,13 +20,9 @@
       </div>
     </modal>
 
-    <div
-      class="galleries"
-      ref="galleries"
-      @touchstart="isToolBarOpen=false"
-      @scroll="handleGalleryScroll"
-    >
+    <scroller class="galleries" ref="galleries" @scroll="handleGalleryScroll">
       <router-link
+        tag="div"
         class="gallery"
         v-for="gallery of galleries"
         :key="gallery.detailUrl"
@@ -67,7 +63,7 @@
           </div>
         </div>
       </router-link>
-    </div>
+    </scroller>
 
     <div class="tool-bar" :class="{'open': isToolBarOpen}">
       <div class="controls">
@@ -93,13 +89,13 @@
       </div>
 
       <div class="functions">
-        <router-link class="function" :to="{name: 'user'}">
+        <router-link tag="div" class="function" :to="{name: 'user'}">
           <icon icon="user" />
         </router-link>
-        <router-link class="function" :to="{name: 'download'}">
+        <router-link tag="div" class="function" :to="{name: 'download'}">
           <icon icon="download" />
         </router-link>
-        <router-link class="function" :to="{name: 'blockTag'}">
+        <router-link tag="div" class="function" :to="{name: 'blockTag'}">
           <icon icon="eye-slash" />
         </router-link>
       </div>
@@ -112,6 +108,7 @@ import Icon from '@/components/Icon'
 import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
+import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
 import defaults from '@/data/defaults'
@@ -122,7 +119,8 @@ export default {
     Icon,
     Btn,
     Loading,
-    Modal
+    Modal,
+    Scroller
   },
   mounted() {
     let searchParams = { ...defaults.searchParams }
@@ -134,9 +132,6 @@ export default {
     this.searchParams = searchParams
     this.fetchPage()
   },
-  activated() {
-    this.$refs.galleries.scrollTop = this.scrollTop
-  },
   data() {
     return {
       searchParams: '',
@@ -147,9 +142,7 @@ export default {
 
       isToolBarOpen: false,
       isLoading: false,
-      showPageInputModal: false,
-
-      scrollTop: 0
+      showPageInputModal: false
     }
   },
   methods: {
@@ -182,7 +175,7 @@ export default {
         })
     },
     handleGalleryScroll(e) {
-      this.scrollTop = this.$refs.galleries.scrollTop
+      this.isToolBarOpen = false
       if (this.isLoading || this.searchParams.page >= this.totalPages - 1) {
         return
       }
@@ -231,8 +224,6 @@ export default {
   right: 0;
   top: 0;
   bottom: 40px;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .gallery {

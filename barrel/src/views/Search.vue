@@ -9,7 +9,7 @@
       </div>
     </bottom-bar>
 
-    <div class="search-form">
+    <scroller class="search-form">
       <ipt class="search-input" v-model="searchVal" icon="search" />
       <div class="search-title">
         <icon icon="tags" />
@@ -50,7 +50,7 @@
         <span>-</span>
         <input type="number" class="search-pages" v-model.number="searchPagesMax" />
       </div>
-    </div>
+    </scroller>
   </div>
 </template>
 
@@ -60,6 +60,7 @@ import Ipt from '@/components/Ipt'
 import Btn from '@/components/Btn'
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
+import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
 import defaults from '@/data/defaults'
@@ -71,7 +72,8 @@ export default {
     Ipt,
     Btn,
     TopBar,
-    BottomBar
+    BottomBar,
+    Scroller
   },
   mounted() {
     let searchParams = { ...defaults.searchParams }
@@ -160,8 +162,6 @@ export default {
   bottom: 40px;
   left: 0;
   right: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .search-input {

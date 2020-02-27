@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("api/image")
@@ -24,11 +23,7 @@ public class ImageApi {
 
     @GetMapping("local")
     public void localImage(@RequestParam String path, HttpServletResponse response) {
-        try {
-            galleryImageService.writeLocalImage(path, response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        galleryImageService.writeLocalImage(path, response);
     }
 
 }

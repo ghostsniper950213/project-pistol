@@ -1,9 +1,11 @@
 import axios from 'axios'
 
-const baseRestUrl = 'http://192.168.123.192:8848/api/'
-const baseWsUrl = 'ws://192.168.123.192:8848/ws'
-// const baseRestUrl = 'http://' + window.location.host + '/api/'
-// const baseWsUrl = 'ws://' + window.location.host + '/ws'
+// const baseRestUrl = 'http://192.168.123.192:8848/api/'
+// const baseWsUrl = 'ws://192.168.123.192:8848/ws'
+// const baseRestUrl = 'http://172.20.10.4:8848/api/'
+// const baseWsUrl = 'ws://172.20.10.4:8848/ws'
+const baseRestUrl = 'http://' + window.location.host + '/api/'
+const baseWsUrl = 'ws://' + window.location.host + '/ws'
 
 const urls = {
   user: {

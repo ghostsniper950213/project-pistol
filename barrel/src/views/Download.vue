@@ -16,8 +16,9 @@
       </div>
     </bottom-bar>
 
-    <div class="downloads" ref="downloads" @scroll="handleScroll">
+    <scroller class="downloads" ref="downloads" @scroll="handleScroll">
       <router-link
+        tag="div"
         class="download"
         v-for="download of downloads"
         :key="download.detail.detailUrl"
@@ -65,7 +66,7 @@
           </div>
         </div>
       </router-link>
-    </div>
+    </scroller>
   </div>
 </template>
 
@@ -75,6 +76,7 @@ import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
+import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage, requestLocalImage } from '@/axios'
 
@@ -85,13 +87,11 @@ export default {
     Btn,
     Loading,
     TopBar,
-    BottomBar
+    BottomBar,
+    Scroller
   },
   mounted() {
     this.fetchGalleries()
-  },
-  activated() {
-    this.$refs.downloads.scrollTop = this.scrollTop
   },
   data() {
     return {
@@ -100,7 +100,6 @@ export default {
 
       checkMode: false,
       isLoading: false,
-      scrollTop: 0,
 
       donwloadWs: ''
     }
@@ -125,7 +124,9 @@ export default {
       this.isLoading = true
       let detailUrls = this.checked.reduce((p, n) => p + ',' + n)
       axios
-        .post(urls.download.remove, null, { params: { detailUrls: detailUrls } })
+        .post(urls.download.remove, null, {
+          params: { detailUrls: detailUrls }
+        })
         .then(response => {
           this.fetchGalleries()
           this.checked = []
@@ -163,7 +164,9 @@ export default {
       this.isLoading = true
       let detailUrls = this.checked.reduce((p, n) => p + ',' + n)
       axios
-        .post(urls.download.resume, null, { params: { detailUrls: detailUrls } })
+        .post(urls.download.resume, null, {
+          params: { detailUrls: detailUrls }
+        })
         .then(response => {
           this.fetchGalleries()
           this.checked = []
@@ -182,7 +185,9 @@ export default {
       this.isLoading = true
       let detailUrls = this.checked.reduce((p, n) => p + ',' + n)
       axios
-        .post(urls.download.update, null, { params: { detailUrls: detailUrls } })
+        .post(urls.download.update, null, {
+          params: { detailUrls: detailUrls }
+        })
         .then(response => {
           this.fetchGalleries()
           this.checked = []
@@ -199,9 +204,6 @@ export default {
       } else {
         this.checked.push(detailUrl)
       }
-    },
-    handleScroll(e) {
-      this.scrollTop = e.target.scrollTop
     },
     handleImgError(e) {
       let img = e.srcElement
@@ -247,8 +249,6 @@ export default {
   right: 0;
   top: 40px;
   bottom: 50px;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .download {
