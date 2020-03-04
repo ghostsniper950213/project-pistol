@@ -73,9 +73,9 @@ public class DownloadApi {
         return OperationResult.success();
     }
 
-    @PostMapping("update")
-    public OperationResult update(@RequestParam String detailUrls) {
-        galleryDetailService.update(
+    @PostMapping("redownload")
+    public OperationResult redownload(@RequestParam String detailUrls) {
+        galleryDownloadService.redownload(
                 Arrays
                         .stream(detailUrls.split(","))
                         .filter(StringUtils::isNotBlank)

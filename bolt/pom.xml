@@ -10,7 +10,7 @@
     </parent>
     <groupId>cloud.chenh</groupId>
     <artifactId>bolt</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>luger</version>
 
     <properties>
         <java.version>1.8</java.version>

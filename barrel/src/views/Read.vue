@@ -2,9 +2,30 @@
   <div id="read">
     <loading v-show="isLoading" />
 
-    <top-bar title="阅读" />
+    <div
+      class="swiper"
+      ref="swiper"
+      @touchstart="handleSlideStart"
+      @touchmove="handleSlideMove"
+      @touchend="handleSlideEnd"
+    >
+      <div
+        class="slide"
+        :class="{'animate': animate}"
+        v-for="i of totalElements"
+        :key="i"
+        :ref="i === 1? 'firstSlide' : null"
+      >
+        <img
+          v-if="download"
+          :src="imgs[i - 1] ? localImageUrl(imgs[i - 1]) : loadingImg"
+          @error="handleImgError"
+        />
+        <img v-else v-lazy="imgs[i - 1] ? imageUrl(imgs[i - 1]) : ''" @error="handleImgError" />
+      </div>
+    </div>
 
-    <bottom-bar>
+    <bottom-bar class="status-bar">
       <div class="page-info">
         <div class="page-number">
           <span>{{ currentIndex + 1 }}</span>
@@ -20,36 +41,11 @@
         </div>
       </div>
     </bottom-bar>
-
-    <div
-      class="swiper"
-      ref="swiper"
-      @touchstart="handleSlideStart"
-      @touchmove="handleSlideMove"
-      @touchend="handleSlideEnd"
-    >
-      <div
-        class="slide"
-        :class="{'animate': animate}"
-        v-for="i of totalElements"
-        :key="i"
-        :ref="i === 1? 'firstSlide' : null"
-      >
-        <!-- :src="imgs[i - 1] ? localImageUrl(imgs[i - 1]) : loadingImg" -->
-        <img
-          v-if="download"
-          :src="imgs[i - 1] ? localImageUrl(imgs[i - 1]) : loadingImg"
-          @error="handleImgError"
-        />
-        <img v-else v-lazy="imgs[i - 1] ? imageUrl(imgs[i - 1]) : ''" @error="handleImgError" />
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import Loading from '@/components/Loading'
-import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 
 import { axios, urls, requestLocalImage, requestViewImage } from '@/axios'
@@ -58,7 +54,6 @@ export default {
   name: 'Read',
   components: {
     Loading,
-    TopBar,
     BottomBar
   },
   mounted() {
@@ -262,8 +257,8 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  top: 40px;
   bottom: 40px;
+  top: 0;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -276,7 +271,7 @@ export default {
 }
 
 .slide.animate {
-  transition: margin-left 0.2s;
+  transition: margin-left 0.2s ease-in-out;
 }
 
 .slide img {
@@ -290,9 +285,14 @@ export default {
   margin: auto;
 }
 
+.status-bar {
+  display: flex;
+  align-items: center;
+}
+
 .page-info {
-  margin-left: 10px;
-  width: 50px;
+  width: 60px;
+  padding: 0 10px;
   text-align: center;
 }
 
@@ -302,7 +302,7 @@ export default {
 
 .page-number {
   line-height: 15px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #234;
 }
 
 .total-elements {
@@ -311,7 +311,7 @@ export default {
 
 .stage-container {
   flex: 1;
-  margin: 0 20px;
+  margin: 0 20px 0 10px;
 }
 
 .stage {
@@ -328,13 +328,13 @@ export default {
   width: 20px;
   height: 20px;
   background-color: #fff;
-  border: 2px solid #234;
+  border: 2px solid #567;
   border-radius: 10px;
   z-index: 10;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .dragger.animate {
-  transition: left 0.2s;
+  transition: left 0.2s ease-in-out;
 }
 </style>

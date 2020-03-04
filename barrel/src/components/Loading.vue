@@ -33,9 +33,9 @@ export default {
   text-align: center;
   border-radius: 15px;
   background-color: #fff;
-  border: 2px solid #234;
+  border: 2px solid #567;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+  transition: transform 0.2s ease-in-out;
 }
 
 .loading-trans-enter,

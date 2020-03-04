@@ -2,25 +2,12 @@
   <div id="gallery">
     <loading :show="isLoading" />
 
-    <modal :show="showPageInputModal" @close="showPageInputModal = false">
-      <div class="page-input-modal-title">
-        <span>请输入跳转页码{{ totalPages > 0 ? '（1~' + totalPages + '）': '' }}：</span>
-      </div>
-      <div class="page-input-modal-input">
-        <input type="number" v-model="jumpPage" />
-      </div>
-      <div class="page-input-modal-btns">
-        <btn class="page-input-cancel-btn" @click="showPageInputModal = !showPageInputModal">
-          <icon icon="times" />&nbsp;取消
-        </btn>
-        <btn class="page-input-confirm-btn" @click="handlePageJump">
-          确认&nbsp;
-          <icon icon="check" />
-        </btn>
-      </div>
-    </modal>
-
-    <scroller class="galleries" ref="galleries" @scroll="handleGalleryScroll">
+    <scroller
+      class="galleries"
+      ref="galleries"
+      @scroll="handleGalleryScroll"
+      @touchstart.native="handleGalleryTouchStart"
+    >
       <router-link
         tag="div"
         class="gallery"
@@ -65,41 +52,52 @@
       </router-link>
     </scroller>
 
-    <div class="tool-bar" :class="{'open': isToolBarOpen}">
-      <div class="controls">
-        <div class="search-val-part">
-          <router-link :to="{name: 'search', query: searchParams}" tag="div" class="search-val">
-            <icon icon="search" v-if="!searchParams.f_search" />
-            <span>{{ searchParams.f_search }}</span>
-          </router-link>
-        </div>
-        <div class="page-info" @click="showPageInputModal = totalPages > 0 ? true: false">
-          <div class="page-number">
-            <span>{{ parseInt(searchParams.page) + 1 }}</span>
-          </div>
-          <div class="total-pages">
-            <span>{{ totalPages > 0 ? totalPages : '-' }}</span>
-          </div>
-        </div>
-        <div class="function-btn">
-          <button @click="isToolBarOpen = !isToolBarOpen">
-            <icon icon="angle-up" :class="{'fa-flip-vertical': isToolBarOpen}" />
-          </button>
-        </div>
+    <modal :show="showPageInputModal" @close="showPageInputModal = false">
+      <div class="page-input-modal-title">
+        <span>跳转页码{{ totalPages > 0 ? '（1~' + totalPages + '）': '' }}</span>
       </div>
+      <div class="page-input-modal-input">
+        <input type="number" v-model="jumpPage" />
+      </div>
+      <div class="page-input-modal-btns">
+        <btn class="page-input-cancel-btn" @click="showPageInputModal = !showPageInputModal">取消</btn>
+        <btn class="page-input-confirm-btn" type="blue" @click="handlePageJump">确认</btn>
+      </div>
+    </modal>
 
-      <div class="functions">
+    <transition name="functions-trans">
+      <div class="functions" v-show="isFunctionsShow">
         <router-link tag="div" class="function" :to="{name: 'user'}">
           <icon icon="user" />
-        </router-link>
-        <router-link tag="div" class="function" :to="{name: 'download'}">
-          <icon icon="download" />
         </router-link>
         <router-link tag="div" class="function" :to="{name: 'blockTag'}">
           <icon icon="eye-slash" />
         </router-link>
+        <router-link tag="div" class="function" :to="{name: 'download'}">
+          <icon icon="download" />
+        </router-link>
       </div>
-    </div>
+    </transition>
+
+    <bottom-bar class="status-bar">
+      <div class="page-info" @click="showPageInputModal = totalPages > 0 ? true: false">
+        <div class="page-number">
+          <span>{{ parseInt(searchParams.page) + 1 }}</span>
+        </div>
+        <div class="total-pages">
+          <span>{{ totalPages > 0 ? totalPages : '-' }}</span>
+        </div>
+      </div>
+      <router-link :to="{name: 'search', query: searchParams}" tag="div" class="search-val">
+        <icon icon="search" v-if="!searchParams.f_search" />
+        <span>{{ searchParams.f_search }}</span>
+      </router-link>
+      <div class="function-btn">
+        <button @click="isFunctionsShow = !isFunctionsShow">
+          <icon icon="angle-up" :class="{'open': isFunctionsShow}" />
+        </button>
+      </div>
+    </bottom-bar>
   </div>
 </template>
 
@@ -108,6 +106,7 @@ import Icon from '@/components/Icon'
 import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
+import BottomBar from '@/components/BottomBar'
 import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
@@ -120,6 +119,7 @@ export default {
     Btn,
     Loading,
     Modal,
+    BottomBar,
     Scroller
   },
   mounted() {
@@ -140,7 +140,7 @@ export default {
 
       galleries: [],
 
-      isToolBarOpen: false,
+      isFunctionsShow: false,
       isLoading: false,
       showPageInputModal: false
     }
@@ -175,7 +175,6 @@ export default {
         })
     },
     handleGalleryScroll(e) {
-      this.isToolBarOpen = false
       if (this.isLoading || this.searchParams.page >= this.totalPages - 1) {
         return
       }
@@ -186,6 +185,9 @@ export default {
         this.searchParams.page++
         this.fetchPage()
       }
+    },
+    handleGalleryTouchStart() {
+      this.isFunctionsShow = false
     },
     handlePageJump() {
       if (this.jumpPage < 1 || this.jumpPage > this.totalPages) {
@@ -222,16 +224,17 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
   bottom: 40px;
+  top: 0;
 }
 
 .gallery {
   display: block;
-  height: 160px;
   padding: 10px;
-  border-top: 0.5px solid #ccc;
+  height: 160px;
   overflow: hidden;
+  background-color: #fff;
+  border-top: 0.5px solid #bbb;
 }
 
 .gallery:first-of-type {
@@ -261,8 +264,8 @@ export default {
 
 .gallery-info {
   display: inline-block;
-  margin-left: 10px;
   width: calc(100% - 110px);
+  margin-left: 10px;
   height: 100%;
   vertical-align: middle;
 }
@@ -272,7 +275,7 @@ export default {
   word-wrap: break-word;
   font-weight: bold;
   line-height: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 12.5px;
   overflow: hidden;
 }
 
@@ -284,8 +287,8 @@ export default {
 }
 
 .gallery-info-row {
-  height: 20px;
-  line-height: 20px;
+  height: 22.5px;
+  line-height: 22.5px;
 }
 
 .gallery-info-item {
@@ -297,90 +300,15 @@ export default {
   margin-right: 0;
 }
 
-.gallery-info-item {
-  color: #567;
-}
-
-.tool-bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% - 40px);
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
-  transition: top 0.2s;
-  background-color: #fff;
-}
-
-.tool-bar.open {
-  top: calc(100% - 105px);
-}
-
-.controls {
-  height: 40px;
-  display: flex;
-  align-items: center;
-}
-
-.function-btn {
-  width: 50px;
-}
-
-.function-btn button {
-  height: 50px;
-  width: 50px;
-  background: none;
-  line-height: 50px;
-  font-size: 24px;
-}
-
-.function-btn .icon {
-  transition: transform 0.2s;
-}
-
-.search-val-part {
-  flex: 1;
-  overflow: hidden;
-}
-
-.search-val {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  line-height: 30px;
-  margin: 5px 10px;
-  background-color: #eee;
-  padding: 0 10px;
-  border-radius: 5px;
-  text-align: center;
-}
-
-.search-val-part .icon {
-  color: #aaa;
-}
-
-.page-info {
-  width: 50px;
-  text-align: center;
-}
-
-.page-info * {
-  font-size: 12px;
-}
-
-.page-number {
-  line-height: 15px;
-  border-bottom: 1px solid #ccc;
-}
-
-.total-pages {
-  line-height: 15px;
-}
-
 .functions {
-  height: 55px;
+  position: absolute;
+  right: 10px;
+  bottom: 50px;
   padding: 5px;
-  padding-top: 0;
-  margin-bottom: 10px;
+  transition: bottom 0.2s ease-in-out;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .function {
@@ -393,19 +321,94 @@ export default {
   line-height: 50px;
   text-align: center;
   border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.function:active {
+  background-color: #ddd;
+}
+
+.functions-trans-enter,
+.functions-trans-leave-to {
+  bottom: -30px;
+}
+
+.status-bar {
+  align-items: center;
+  display: flex;
+}
+
+.function-btn {
+  width: 60px;
+}
+
+.function-btn button {
+  height: 40px;
+  width: 100%;
+  background: none;
+  line-height: 40px;
+  font-size: 24px;
+}
+
+.function-btn button:active {
+  background-color: #ddd;
+}
+
+.function-btn .icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.function-btn .icon.open {
+  transform: rotateX(180deg);
+}
+
+.search-val {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 40px;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.search-val:active {
+  background-color: #ddd;
+}
+
+.page-info {
+  width: 60px;
+  height: 40px;
+  padding: 5px 10px;
+  text-align: center;
+}
+
+.page-info:active {
+  background-color: #ddd;
+}
+
+.page-info * {
+  font-size: 12px;
+}
+
+.page-number {
+  line-height: 15px;
+  border-bottom: 1px solid #234;
+  white-space: nowrap;
+}
+
+.total-pages {
+  white-space: nowrap;
+  line-height: 15px;
 }
 
 .page-input-modal-title {
   line-height: 40px;
 }
 
-.page-input-modal-input {
-  margin-top: 10px;
-}
-
 .page-input-modal-input input {
   width: 100%;
-  height: 30px;
+  height: 40px;
   border-radius: 5px;
   outline: none;
   background-color: rgba(0, 0, 0, 0.1);
@@ -416,14 +419,15 @@ export default {
 .page-input-modal-btns {
   line-height: 40px;
   margin-top: 10px;
-  text-align: right;
+  display: flex;
 }
 
-.page-input-cancel-btn {
-  color: #aaa;
+.page-input-modal-btns button {
+  flex: 1;
+  margin-left: 10px;
 }
 
-.page-input-confirm-btn {
-  color: #2a2;
+.page-input-modal-btns button:first-of-type {
+  margin-left: 0;
 }
 </style>

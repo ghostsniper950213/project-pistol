@@ -2,91 +2,73 @@
   <div id="detail">
     <loading v-show="isLoading" />
 
-    <top-bar title="详情" />
-
-    <bottom-bar>
-      <div class="bottom-bar-right">
-        <button class="download-btn" v-if="!detail.download" @click="handleDownload">下载</button>
-        <button class="read-btn" @click="handleRead">阅读</button>
-      </div>
-    </bottom-bar>
-
-    <modal :show="clickedTag" @close="clickedTag = ''">
-      <div class="tag-block-modal-title">{{ clickedTag }}</div>
-        <div class="tag-block-modal-btns">
-          <btn class="tag-block-cancel-btn" @click="clickedTag = ''">
-            <icon icon="times" />&nbsp;取消
-          </btn>
-          <btn class="tag-block-block-btn" @click="handleBlockTag">
-            <icon icon="eye-slash" />&nbsp;屏蔽
-          </btn>
-          <btn class="tag-block-search-btn" @click="handleSearchTag">
-            <icon icon="search" />&nbsp;搜索
-          </btn>
-        </div>
-    </modal>
-
     <scroller class="detail" v-if="detail">
-      <div class="thumbs-row" @scroll="handleThumbsScroll">
-        <img v-for="thumb of thumbs" :key="thumb" v-lazy="imageUrl(thumb)" @error="handleImgError" />
-      </div>
+      <div class="detail-info">
+        <div class="thumbs-row" @scroll="handleThumbsScroll">
+          <img
+            v-for="thumb of thumbs"
+            :key="thumb"
+            v-lazy="imageUrl(thumb)"
+            @error="handleImgError"
+          />
+        </div>
 
-      <div class="title">
-        <span>{{ detail.title }}</span>
-      </div>
+        <div class="title">
+          <span>{{ detail.title }}</span>
+        </div>
 
-      <div class="detail-row">
-        <div class="detail-item category">
-          <icon icon="tags" />&nbsp;
-          <span>{{ detail.category }}</span>
+        <div class="detail-row">
+          <div class="detail-item category">
+            <icon icon="tags" />&nbsp;
+            <span>{{ detail.category }}</span>
+          </div>
+          <div class="detail-item language">
+            <icon icon="atlas" />&nbsp;
+            <span>{{ detail.language }}</span>
+          </div>
         </div>
-        <div class="detail-item language">
-          <icon icon="atlas" />&nbsp;
-          <span>{{ detail.language }}</span>
-        </div>
-      </div>
 
-      <div class="detail-row">
-        <div class="detail-item rating">
-          <icon icon="star" />&nbsp;
-          <span>{{ detail.rating }}</span>
+        <div class="detail-row">
+          <div class="detail-item rating">
+            <icon icon="star" />&nbsp;
+            <span>{{ detail.rating }}</span>
+          </div>
+          <div class="detail-item favorites">
+            <icon icon="heart" />&nbsp;
+            <span>{{ detail.favorites }}</span>
+          </div>
+          <div class="detail-item pages">
+            <icon icon="images" />&nbsp;
+            <span>{{ detail.pages }}</span>
+          </div>
         </div>
-        <div class="detail-item favorites">
-          <icon icon="heart" />&nbsp;
-          <span>{{ detail.favorites }}</span>
-        </div>
-        <div class="detail-item pages">
-          <icon icon="images" />&nbsp;
-          <span>{{ detail.pages }}</span>
-        </div>
-      </div>
 
-      <div class="detail-row">
-        <div class="detail-item uploader" @click="handleSearchUploader(detail.uploader)">
-          <icon icon="upload" />&nbsp;
-          <span>{{ detail.uploader }}</span>
+        <div class="detail-row">
+          <div class="detail-item uploader" @click="handleSearchUploader(detail.uploader)">
+            <icon icon="upload" />&nbsp;
+            <span>{{ detail.uploader }}</span>
+          </div>
+          <div class="detail-item time">
+            <icon icon="clock" />&nbsp;
+            <span>{{ detail.time }}</span>
+          </div>
         </div>
-        <div class="detail-item time">
-          <icon icon="clock" />&nbsp;
-          <span>{{ detail.time }}</span>
-        </div>
-      </div>
 
-      <div class="tags-row">
-        <div class="tag-row" v-for="tag of detail.tags" :key="tag.name">
-          <div class="tag-name">{{ tagNameDisplay(tag.name) }}</div>
-          <div class="tag-vals">
-            <div
-              class="tag-val"
-              v-for="val of tag.vals"
-              :key="val"
-              @click="clickedTag = tag.name + ':' +  val"
-            >{{ tagValDisplay(tag.name, val) }}</div>
+        <div class="tags-row">
+          <div class="tag-row" v-for="tag of detail.tags" :key="tag.name">
+            <div class="tag-name">{{ tagNameDisplay(tag.name) }}</div>
+            <div class="tag-vals">
+              <div
+                class="tag-val"
+                v-for="val of tag.vals"
+                :key="val"
+                @click="clickedTag = tag.name + ':' +  val"
+              >{{ tagValDisplay(tag.name, val) }}</div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="comments-row">
+      <div class="detail-comments">
         <div class="comment" v-for="(comment, index) of detail.comments" :key="index">
           <div class="comment-infos">
             <div class="comment-info comment-author">
@@ -109,6 +91,23 @@
       </div>
     </scroller>
 
+    <modal :show="clickedTag" @close="clickedTag = ''">
+      <div class="tag-block-modal-title">{{ clickedTag }}</div>
+      <div class="tag-block-modal-btns">
+        <btn class="tag-block-cancel-btn" @click="clickedTag = ''">取消</btn>
+        <btn class="tag-block-block-btn" type="red" @click="handleBlockTag">屏蔽</btn>
+        <btn class="tag-block-search-btn" type="blue" @click="handleSearchTag">搜索</btn>
+      </div>
+    </modal>
+
+    <bottom-bar>
+      <button class="download-btn" v-if="!detail.download" @click="handleDownload">
+        <icon icon="download" />
+      </button>
+      <button class="read-btn" @click="handleRead">
+        <icon icon="book-reader" />
+      </button>
+    </bottom-bar>
   </div>
 </template>
 
@@ -116,7 +115,6 @@
 import Icon from '@/components/Icon'
 import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
-import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import Modal from '@/components/Modal'
 import Scroller from '@/components/Scroller'
@@ -131,7 +129,6 @@ export default {
     Icon,
     Btn,
     Loading,
-    TopBar,
     BottomBar,
     Modal,
     Scroller
@@ -293,10 +290,14 @@ export default {
 <style scoped>
 .detail {
   position: absolute;
-  top: 40px;
-  bottom: 40px;
   left: 0;
   right: 0;
+  bottom: 40px;
+  top: 0;
+}
+
+.detail-info {
+  background-color: #fff;
 }
 
 .thumbs-row {
@@ -326,14 +327,19 @@ export default {
 .detail-item {
   display: inline-block;
   margin-right: 20px;
+  border-radius: 5px;
 }
 
 .detail-item:last-of-type {
   margin-right: 0;
 }
 
+.uploader:active * {
+  color: #89a;
+}
+
 .tags-row {
-  margin: 20px 10px 0 10px;
+  margin: 20px 10px;
 }
 
 .tag-row {
@@ -363,17 +369,17 @@ export default {
   background-color: #eee;
 }
 
-.comments-row {
-  margin-top: 20px;
+.tag-val:active {
+  background-color: #ddd;
+}
+
+.detail-comments {
+  background-color: #fff;
 }
 
 .comment {
-  border-top: 0.5px solid #ccc;
+  border-top: 0.5px solid #bbb;
   padding: 10px;
-}
-
-.comment-infos * {
-  color: #567;
 }
 
 .comment-info {
@@ -393,34 +399,22 @@ export default {
   padding: 5px 10px;
 }
 
-.download-btn {
-  color: #2af;
-}
-
-.read-btn {
-  color: #2a2;
-}
-
 .tag-block-modal-title {
   line-height: 40px;
-  text-align: center;
 }
 
 .tag-block-modal-btns {
   line-height: 40px;
   margin-top: 10px;
-  text-align: center;
+  display: flex;
 }
 
-.tag-block-cancel-btn {
-  color: #aaa;
+.tag-block-modal-btns button {
+  margin-left: 10px;
+  flex: 1;
 }
 
-.tag-block-block-btn {
-  color: #f22;
-}
-
-.tag-block-search-btn {
-  color: #2af;
+.tag-block-modal-btns button:first-of-type {
+  margin-left: 0;
 }
 </style>

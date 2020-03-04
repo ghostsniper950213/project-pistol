@@ -33,7 +33,7 @@ export default {
   right: 0;
   background-color: rgba(0, 0, 0, 0.1);
   opacity: 1;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .modal-cover-trans-enter,
@@ -48,14 +48,15 @@ export default {
   left: 20px;
   right: 20px;
   background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   padding: 10px;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease-in-out;
+  text-align: center;
 }
 
 .modal-panel-trans-enter,
 .modal-panel-trans-leave-to {
-  transform: translateY(180px);
+  transform: translateY(calc(100% + 20px));
 }
 </style>

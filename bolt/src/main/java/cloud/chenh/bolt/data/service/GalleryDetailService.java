@@ -88,25 +88,4 @@ public class GalleryDetailService {
         galleryDownloadService.add(galleryDownload);
     }
 
-    public void update(List<String> detailUrls) {
-        new Thread(() -> {
-            detailUrls.forEach(detailUrl -> {
-                GalleryDownload galleryDownload = galleryDownloadService.get(detailUrl);
-                for (int i = 0; i < GalleryConstants.DEFAULT_RETRY; i++) {
-                    try {
-                        GalleryDetail detail = getDetail(detailUrl);
-                        galleryDownload.setDetail(detail);
-                        break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        if (i == GalleryConstants.DEFAULT_RETRY - 1) {
-                            galleryDownload.setStatus(GalleryDownload.StatusEnum.FAILED);
-                        }
-                    }
-                }
-                galleryDownloadService.save(galleryDownload);
-            });
-        }).start();
-    }
-
 }

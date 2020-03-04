@@ -27,6 +27,7 @@ const urls = {
     resume: baseRestUrl + '/download/resume',
     pause: baseRestUrl + '/download/pause',
     update: baseRestUrl + '/download/update',
+    redownload: baseRestUrl + '/download/redownload',
   },
   tag: {
     blockedTags: baseRestUrl + '/tag/blocked',

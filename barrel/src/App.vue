@@ -1,22 +1,14 @@
 <template>
   <div id="app">
-    <!-- <keep-alive :include="keepAlives"> -->
     <navigation>
       <router-view id="main-view" />
     </navigation>
-    <!-- </keep-alive> -->
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App',
-  data() {
-    return {
-      // keepAlives: ['Gallery', 'Download'],
-      keepAlives: ['Gallery', 'Download']
-    }
-  }
+  name: 'App'
 }
 </script>
 
@@ -32,6 +24,7 @@ export default {
   font-size: 16px;
   color: #234;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-appearance: none;
 }
 
 body {
@@ -45,7 +38,5 @@ body {
   left: 0;
   right: 0;
   background-color: #fff;
-  box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s cubic-bezier(1, 0, 0, 1);
 }
 </style>

@@ -1,6 +1,5 @@
 package cloud.chenh.bolt.data.web;
 
-import cloud.chenh.bolt.data.model.GalleryOverview;
 import cloud.chenh.bolt.data.model.OperationResult;
 import cloud.chenh.bolt.data.service.GalleryDetailService;
 import cloud.chenh.bolt.data.service.GalleryImageService;

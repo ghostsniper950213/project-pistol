@@ -53,6 +53,7 @@ public class GalleryDownloadService {
 
     public void add(GalleryDownload galleryDownload) {
         galleryDownload.getDetail().setDownload(true);
+        galleryDownload.setStatus(GalleryDownload.StatusEnum.DOWNLOADING);
         save(galleryDownload);
         downloadNext();
     }
@@ -85,16 +86,6 @@ public class GalleryDownloadService {
         List<GalleryDownload> galleryDownloads = galleryDownloadDao.get(detailUrls);
         galleryDownloads.forEach(download -> {
             download.setStatus(GalleryDownload.StatusEnum.DOWNLOADING);
-            String cover = download.getCover();
-            if (cover != null && !new File(cover).exists()) {
-                download.setCover(null);
-            }
-            String[] images = download.getImages();
-            for (int i = 0; i < images.length; i++) {
-                if (images[i] != null && !new File(images[i]).exists()) {
-                    images[i] = null;
-                }
-            }
         });
         save(galleryDownloads);
         downloadNext();
@@ -110,6 +101,30 @@ public class GalleryDownloadService {
         downloadNext();
     }
 
+    public void redownload(List<String> detailUrls) {
+        if (detailUrls.contains(downloadingUrl)) {
+            downloadingUrl = null;
+        }
+        List<GalleryDownload> galleryDownloads = galleryDownloadDao.get(detailUrls);
+        galleryDownloads.forEach(download -> {
+            for (int i = 0; i < GalleryConstants.DEFAULT_RETRY; i++) {
+                try {
+                    FileUtils.deleteDirectory(new File(DOWNLOAD_DIR + "/" + download.getTimestamp()));
+                    GalleryDetail detail = galleryDetailService.getDetail(download.getDetail().getDetailUrl());
+                    detail.setDownload(true);
+                    download.setDetail(detail);
+                    download.setCover(null);
+                    download.setImages(new String[download.getDetail().getPages()]);
+                    download.setStatus(GalleryDownload.StatusEnum.DOWNLOADING);
+                    break;
+                } catch (IOException ignored) {
+                }
+            }
+        });
+        save(galleryDownloads);
+        downloadNext();
+    }
+
     public List<String> keys() {
         return galleryDownloadDao
                 .get()
@@ -118,7 +133,7 @@ public class GalleryDownloadService {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void downloadNext() {
+    public void downloadNext() {
         if (StringUtils.isBlank(downloadingUrl)) {
             GalleryDownload galleryDownload = getDownloadable();
             if (galleryDownload != null) {
@@ -153,11 +168,11 @@ public class GalleryDownloadService {
         save(galleryDownload);
     }
 
-    private void writeStreamAfterCheck(GalleryDownload galleryDownload, InputStream inputStream, File file)
+    private void writeStreamAfterCheck(GalleryDownload galleryDownload, InputStream inputStream, String path)
             throws DownloadStopException, IOException {
 
         checkAlive(galleryDownload);
-        FileUtils.copyInputStreamToFile(inputStream, file);
+        FileUtils.copyInputStreamToFile(inputStream, new File(path));
     }
 
 
@@ -179,7 +194,7 @@ public class GalleryDownloadService {
             }
             try {
                 InputStream coverStream = httpClientService.doGetStream(coverUrl, new HashMap<>());
-                writeStreamAfterCheck(galleryDownload, coverStream, new File(cover));
+                writeStreamAfterCheck(galleryDownload, coverStream, cover);
                 galleryDownload.setCover(cover);
                 saveAfterCheck(galleryDownload);
                 break;
@@ -226,6 +241,13 @@ public class GalleryDownloadService {
                         continue;
                     }
                     String imageUrl = galleryDetailService.getImageUrl(imagePage);
+                    if (imageUrl.contains(GalleryConstants.IMAGE_509)) {
+                        downloadingUrl = null;
+                        galleryDownload.setStatus(GalleryDownload.StatusEnum.FAILED);
+                        saveAfterCheck(galleryDownload);
+                        downloadNext();
+                        return;
+                    }
                     String image = String.format(
                             "%s/%d/%d.%s",
                             DOWNLOAD_DIR,
@@ -234,7 +256,7 @@ public class GalleryDownloadService {
                             FilenameUtils.getExtension(imageUrl)
                     );
                     InputStream imageStream = httpClientService.doGetStream(imageUrl, new HashMap<>());
-                    writeStreamAfterCheck(galleryDownload, imageStream, new File(image));
+                    writeStreamAfterCheck(galleryDownload, imageStream, image);
                     galleryDownload.getImages()[i] = image;
                     saveAfterCheck(galleryDownload);
                     break;

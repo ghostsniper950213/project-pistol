@@ -1,16 +1,13 @@
 <template>
   <div id="search">
-    <top-bar title="搜索" />
-
-    <bottom-bar>
-      <div class="bottom-bar-right">
-        <button class="reset-btn" @click="resetSearch">重置</button>
-        <button class="confirm-btn" @click="handleConfirm">出发</button>
-      </div>
-    </bottom-bar>
-
     <scroller class="search-form">
-      <ipt class="search-input" v-model="searchVal" icon="search" />
+      <ipt
+        class="search-input"
+        v-model="searchVal"
+        icon="search"
+        type="search"
+        @keyup.enter.native="handleConfirm"
+      />
       <div class="search-title">
         <icon icon="tags" />
         <span>类型</span>
@@ -46,9 +43,14 @@
         <span>张数</span>
       </div>
       <div class="search-pages-row">
-        <input type="number" class="search-pages" v-model.number="searchPagesMin" />
-        <span>-</span>
-        <input type="number" class="search-pages" v-model.number="searchPagesMax" />
+        <div class="flex-input-container"><input type="number" class="search-pages" v-model.number="searchPagesMin" /></div>
+        
+        <div class="search-pages-split">-</div>
+        <div  class="flex-input-container"><input type="number" class="search-pages" v-model.number="searchPagesMax" /></div>
+      </div>
+      <div class="search-btns-row">
+        <btn class="reset-btn" @click="resetSearch">重置</btn>
+        <btn class="confirm-btn" type="blue" @click="handleConfirm">出发</btn>
       </div>
     </scroller>
   </div>
@@ -58,8 +60,6 @@
 import Icon from '@/components/Icon'
 import Ipt from '@/components/Ipt'
 import Btn from '@/components/Btn'
-import TopBar from '@/components/TopBar'
-import BottomBar from '@/components/BottomBar'
 import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
@@ -71,8 +71,6 @@ export default {
     Icon,
     Ipt,
     Btn,
-    TopBar,
-    BottomBar,
     Scroller
   },
   mounted() {
@@ -158,10 +156,10 @@ export default {
 <style scoped>
 .search-form {
   position: absolute;
-  top: 40px;
-  bottom: 40px;
   left: 0;
   right: 0;
+  bottom: 50px;
+  top: 0;
 }
 
 .search-input {
@@ -169,7 +167,7 @@ export default {
 }
 
 .search-title {
-  margin: 10px;
+  padding: 10px;
   margin-top: 20px;
 }
 
@@ -178,7 +176,7 @@ export default {
 }
 
 .search-category-row {
-  margin: 0 7px;
+  padding: 0 7px;
 }
 
 .search-category {
@@ -199,7 +197,7 @@ export default {
 }
 
 .search-rate-row {
-  margin: 0 10px;
+  padding: 0 10px;
 }
 
 .search-rate {
@@ -213,33 +211,52 @@ export default {
 }
 
 .search-pages-row {
-  margin: 0 10px;
+  width: 50%;
+  padding: 0 10px;
+  display: inline-flex;
+  position: relative;
 }
 
-.search-pages-row span {
-  margin: 0 10px;
+.flex-input-container {
+  flex: 1;
 }
 
 .search-pages {
-  width: 100px;
-  height: 30px;
-  border-radius: 5px;
+  width: 100%;
+  height: 40px;
   outline: none;
   background-color: rgba(0, 0, 0, 0.1);
   padding: 0 10px;
 }
 
+.flex-input-container:first-of-type .search-pages{
+  border-radius: 5px 0 0 5px;
+}
+
+.flex-input-container:last-of-type .search-pages {
+  border-radius: 0 5px 5px 0;
+}
+
+.search-pages-split {
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  margin: auto;
+}
+
 .search-btns-row {
-  margin: 10px;
-  margin-top: 20px;
+  margin:  20px 10px 10px 10px;
   text-align: right;
 }
 
-.reset-btn {
-  color: #f60;
-}
-
 .confirm-btn {
-  color: #2a2;
+  margin-left: 10px;
 }
 </style>

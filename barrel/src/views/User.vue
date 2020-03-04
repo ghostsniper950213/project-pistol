@@ -2,8 +2,6 @@
   <div id="user">
     <loading v-show="isLoading" />
 
-    <top-bar title="用户" />
-
     <scroller class="user-form">
       <div class="login-title">
         <span>使用用户名与密码获取Cookie：</span>
@@ -17,13 +15,7 @@
         </div>
       </div>
       <div class="login-btns">
-        <btn class="logout-btn" @click="handleLogout" :disabled="isLoading">
-          <icon icon="sign-out-alt" />&nbsp;登出
-        </btn>
-        <btn class="login-btn" @click="handleLogin" :disabled="isLoading">
-          登入&nbsp;
-          <icon icon="sign-in-alt" />
-        </btn>
+        <btn class="login-btn" type="blue" @click="handleLogin" :disabled="isLoading">获取</btn>
       </div>
       <div class="login-title">
         <span>或者直接填写Cookie：</span>
@@ -43,10 +35,8 @@
         </div>
       </div>
       <div class="finish-btns">
-        <btn class="save-btn" @click="handleSaveCookies" :disabled="isLoading">
-          上传&nbsp;
-          <icon icon="save" />
-        </btn>
+        <btn class="logout-btn" type="red" @click="handleLogout" :disabled="isLoading">清除</btn>
+        <btn class="save-btn" type="blue" @click="handleSaveCookies" :disabled="isLoading">上传</btn>
       </div>
     </scroller>
   </div>
@@ -57,7 +47,6 @@ import Icon from '@/components/Icon'
 import Ipt from '@/components/Ipt'
 import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
-import TopBar from '@/components/TopBar'
 import Scroller from '@/components/Scroller'
 
 import { axios, urls, requestImage } from '@/axios'
@@ -69,7 +58,6 @@ export default {
     Ipt,
     Btn,
     Loading,
-    TopBar,
     Scroller
   },
   mounted() {
@@ -165,12 +153,10 @@ export default {
 <style scoped>
 .user-form {
   position: absolute;
-  top: 40px;
-  bottom: 0;
   left: 0;
   right: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  bottom: 40px;
+  top: 0;
 }
 
 .login-title {
@@ -199,21 +185,11 @@ export default {
 .login-btns {
   padding: 0 10px;
   text-align: right;
+  margin-bottom: 10px;
 }
 
-.login-btns btn {
-  border-radius: 10px;
-  height: 40px;
-  padding: 0 20px;
-  margin-left: 10px;
-}
-
-.login-btns btn:active {
-  opacity: 0.8;
-}
-
-.login-btn {
-  color: #2af;
+.logout-btn {
+  margin-right: 10px;
 }
 
 .cookie-part {
@@ -236,7 +212,7 @@ export default {
   width: calc(100% - 140px);
   padding: 10px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 5px;
   outline: none;
   background-color: rgba(0, 0, 0, 0.1);
 }
@@ -244,13 +220,5 @@ export default {
 .finish-btns {
   padding: 0 10px;
   text-align: right;
-}
-
-.save-btn {
-  color: #2a2;
-}
-
-.logout-btn {
-  color: #f22;
 }
 </style>

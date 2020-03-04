@@ -1,5 +1,5 @@
 <template>
-  <font-awesome-icon class="icon" :icon="icon" fixed-width @click="$emit('click')"/>
+  <font-awesome-icon class="icon" :icon="icon" fixed-width @click="$emit('click')" />
 </template>
 
 <script>
@@ -15,21 +15,19 @@ import {
   faUser,
   faDownload,
   faEyeSlash,
-  faUpload,
   faClock,
   faCircleNotch,
-  faArrowRight,
   faArrowLeft,
-  faRedo,
   faAtlas,
   faHeart,
-  faCheck,
-  faTimes,
+  faPause,
+  faUpload,
   faLock,
-  faSignInAlt,
-  faSignOutAlt,
-  faSave,
-  faPause
+  faTrashAlt,
+  faTasks,
+  faRedo,
+  faPlay,
+  faBookReader
 } from '@fortawesome/free-solid-svg-icons'
 library.add(
   faTags,
@@ -41,21 +39,19 @@ library.add(
   faUser,
   faDownload,
   faEyeSlash,
-  faUpload,
   faClock,
   faCircleNotch,
-  faArrowRight,
   faArrowLeft,
-  faRedo,
   faAtlas,
   faHeart,
-  faCheck,
-  faTimes,
+  faPause,
+  faUpload,
   faLock,
-  faSignInAlt,
-  faSignOutAlt,
-  faSave,
-  faPause
+  faTrashAlt,
+  faTasks,
+  faRedo,
+  faPlay,
+  faBookReader
 )
 
 export default {
@@ -74,7 +70,7 @@ export default {
 
 <style>
 .icon {
-  color: inherit;
+  color: #567;
   text-align: center;
   padding: 0;
   margin: 0;
@@ -82,13 +78,13 @@ export default {
 
 .icon svg {
   text-align: center;
-   padding: 0;
+  padding: 0;
   margin: 0;
 }
 
 .icon path {
   color: inherit;
-   padding: 0;
+  padding: 0;
   margin: 0;
 }
 </style>

@@ -1,20 +1,6 @@
 <template>
   <div id="download">
-    <top-bar title="下载" />
-
     <loading v-show="isLoading" />
-
-    <bottom-bar>
-      <div class="bottom-bar-left">
-        <button class="check-btn" @click="checkMode = !checkMode">{{ checkMode ? '取消' : '多选'}}</button>
-      </div>
-      <div class="bottom-bar-right">
-        <button class="update-btn" v-show="checkMode" @click="fetchUpdate">更新</button>
-        <button class="remove-btn" v-show="checkMode" @click="fetchRemove">删除</button>
-        <button class="pause-btn" v-show="checkMode" @click="fetchPause">暂停</button>
-        <button class="resume-btn" v-show="checkMode" @click="fetchResume">恢复</button>
-      </div>
-    </bottom-bar>
 
     <scroller class="downloads" ref="downloads" @scroll="handleScroll">
       <router-link
@@ -67,6 +53,24 @@
         </div>
       </router-link>
     </scroller>
+
+    <bottom-bar>
+      <button class="redownload-btn" v-show="checkMode" @click="fetchRedownload">
+        <icon icon="redo" />
+      </button>
+      <button class="remove-btn" v-show="checkMode" @click="fetchRemove">
+        <icon icon="trash-alt" />
+      </button>
+      <button class="check-btn" @click="checkMode = !checkMode">
+        <icon icon="tasks" />
+      </button>
+      <button class="pause-btn" v-show="checkMode" @click="fetchPause">
+        <icon icon="pause" />
+      </button>
+      <button class="resume-btn" v-show="checkMode" @click="fetchResume">
+        <icon icon="play" />
+      </button>
+    </bottom-bar>
   </div>
 </template>
 
@@ -74,7 +78,6 @@
 import Icon from '@/components/Icon'
 import Btn from '@/components/Btn'
 import Loading from '@/components/Loading'
-import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import Scroller from '@/components/Scroller'
 
@@ -86,7 +89,6 @@ export default {
     Icon,
     Btn,
     Loading,
-    TopBar,
     BottomBar,
     Scroller
   },
@@ -177,7 +179,7 @@ export default {
           this.isLoading = false
         })
     },
-    fetchUpdate() {
+    fetchRedownload() {
       if (this.checked.length <= 0) {
         this.checkMode = false
         return
@@ -185,7 +187,7 @@ export default {
       this.isLoading = true
       let detailUrls = this.checked.reduce((p, n) => p + ',' + n)
       axios
-        .post(urls.download.update, null, {
+        .post(urls.download.redownload, null, {
           params: { detailUrls: detailUrls }
         })
         .then(response => {
@@ -247,15 +249,15 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  top: 40px;
-  bottom: 50px;
+  bottom: 40px;
+  top: 0;
 }
 
 .download {
   display: block;
   height: 160px;
   padding: 10px;
-  border-top: 0.5px solid #ccc;
+  border-top: 0.5px solid #bbb;
   background-color: #fff;
 }
 
@@ -285,6 +287,7 @@ export default {
   top: 0;
   bottom: 0;
   margin: auto;
+  border-radius: 5px;
 }
 
 .download-info {
@@ -301,7 +304,7 @@ export default {
   word-wrap: break-word;
   font-weight: bold;
   line-height: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .download-title span {
@@ -312,8 +315,8 @@ export default {
 }
 
 .download-info-row {
-  height: 20px;
-  line-height: 20px;
+  height: 22.5px;
+  line-height: 22.5px;
 }
 
 .download-info-item {
@@ -323,25 +326,5 @@ export default {
 
 .download-info-item:last-of-type {
   margin-right: 0;
-}
-
-.download-info-item {
-  color: #567;
-}
-
-.update-btn {
-  color: #2af;
-}
-
-.remove-btn {
-  color: #f22;
-}
-
-.pause-btn {
-  color: #f60;
-}
-
-.resume-btn {
-  color: #2a2;
 }
 </style>

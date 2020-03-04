@@ -12,6 +12,8 @@ public class GalleryConstants {
     public static final String DEFAULT_COOKIE_DATE = "9999";
     public static final String LOGIN_SUCCESS_FLAG = "Thanks";
 
+    public static final String IMAGE_509 = "509.gif";
+
     public static final String[] USEFUL_COOKIES = {"ipb_member_id", "ipb_pass_hash", "igneous"};
     public static final String IMPORTANT_COOKIE = "igneous";
 

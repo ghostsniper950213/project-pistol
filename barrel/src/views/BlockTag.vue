@@ -2,14 +2,6 @@
   <div id="blockTag">
     <loading v-show="isLoading" />
 
-    <top-bar title="屏蔽标签" />
-
-    <bottom-bar>
-      <div class="bottom-bar-right">
-        <button class="remove-btn" @click="fetchRemove">删除</button>
-      </div>
-    </bottom-bar>
-
     <scroller class="blocked-tags">
       <div
         class="blocked-tag"
@@ -21,14 +13,20 @@
         <span>{{ tag }}</span>
       </div>
     </scroller>
+
+    <bottom-bar>
+      <button class="remove-btn" @click="fetchRemove">
+        <icon icon="trash-alt" />
+      </button>
+    </bottom-bar>
   </div>
 </template>
 
 <script>
 import Loading from '@/components/Loading'
-import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import Scroller from '@/components/Scroller'
+import Icon from '@/components/Icon'
 
 import { axios, urls } from '@/axios'
 
@@ -36,9 +34,9 @@ export default {
   name: 'BlockTag',
   components: {
     Loading,
-    TopBar,
     BottomBar,
-    Scroller
+    Scroller,
+    Icon
   },
   mounted() {
     this.fetchBlockedTags()
@@ -99,13 +97,14 @@ export default {
   left: 0;
   right: 0;
   bottom: 40px;
-  top: 40px;
+  top: 0;
 }
 
 .blocked-tag {
   padding: 0 10px;
   line-height: 40px;
-  border-top: 0.5px solid #ccc;
+  border-top: 0.5px solid #bbb;
+  background-color: #fff;
 }
 
 .blocked-tag:first-of-type {
@@ -114,9 +113,5 @@ export default {
 
 .blocked-tag.checked {
   background-color: #eee;
-}
-
-.remove-btn {
-  color: #f22;
 }
 </style>

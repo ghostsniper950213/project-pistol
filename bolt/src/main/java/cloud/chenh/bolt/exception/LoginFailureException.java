@@ -1,7 +1,5 @@
 package cloud.chenh.bolt.exception;
 
-import java.io.IOException;
-
 public class LoginFailureException extends Exception {
 
     public LoginFailureException() {
