@@ -40,6 +40,11 @@ const routes = [
     name: 'blockTag',
     component: () => import('../views/BlockTag'),
   },
+  {
+    path: '/setting',
+    name: 'setting',
+    component: () => import('../views/Setting'),
+  },
 ]
 
 const router = new VueRouter({

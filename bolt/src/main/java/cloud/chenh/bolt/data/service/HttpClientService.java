@@ -31,10 +31,13 @@ import java.util.*;
 @Service
 public class HttpClientService {
 
-    private static final Integer DEFAUL_OVERTIME = 6000;
-    private static final Integer STREAM_OVERTIME = 120000;
+    private static final Integer CONNECT_OVERTIME = 2000;
+    private static final Integer IMAGE_SOCKET_OVERTIME = 120000;
+    private static final Integer HTML_SOCKET_OVERTIME = 6000;
 
-    private HttpClient httpClient;
+    private HttpClient imageClient;
+
+    private HttpClient htmlClient;
 
     private CookieStore cookieStore = new BasicCookieStore();
 
@@ -54,7 +57,8 @@ public class HttpClientService {
             builder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
         }
 
-        httpClient = builder.build();
+        imageClient = builder.build();
+        htmlClient = builder.build();
     }
 
     public void loadCookies() {
@@ -91,11 +95,11 @@ public class HttpClientService {
             httpGet.addHeader("User-Agent", GalleryConstants.USER_AGENT);
             RequestConfig requestConfig = RequestConfig
                     .custom()
-                    .setSocketTimeout(DEFAUL_OVERTIME)
-                    .setConnectTimeout(DEFAUL_OVERTIME)
+                    .setConnectTimeout(CONNECT_OVERTIME)
+                    .setSocketTimeout(HTML_SOCKET_OVERTIME)
                     .build();
             httpGet.setConfig(requestConfig);
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = htmlClient.execute(httpGet);
             return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException e) {
             throw new IOException(e);
@@ -110,11 +114,11 @@ public class HttpClientService {
             httpGet.addHeader("User-Agent", GalleryConstants.USER_AGENT);
             RequestConfig requestConfig = RequestConfig
                     .custom()
-                    .setSocketTimeout(STREAM_OVERTIME)
-                    .setConnectTimeout(STREAM_OVERTIME)
+                    .setConnectTimeout(CONNECT_OVERTIME)
+                    .setSocketTimeout(IMAGE_SOCKET_OVERTIME)
                     .build();
             httpGet.setConfig(requestConfig);
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = imageClient.execute(httpGet);
             return response.getEntity().getContent();
         } catch (URISyntaxException e) {
             throw new IOException(e);
@@ -128,11 +132,11 @@ public class HttpClientService {
         httpPost.addHeader("User-Agent", GalleryConstants.USER_AGENT);
         RequestConfig requestConfig = RequestConfig
                 .custom()
-                .setSocketTimeout(DEFAUL_OVERTIME)
-                .setConnectTimeout(DEFAUL_OVERTIME)
+                .setConnectTimeout(CONNECT_OVERTIME)
+                .setSocketTimeout(HTML_SOCKET_OVERTIME)
                 .build();
         httpPost.setConfig(requestConfig);
-        HttpResponse response = httpClient.execute(httpPost);
+        HttpResponse response = htmlClient.execute(httpPost);
         return EntityUtils.toString(response.getEntity());
     }
 

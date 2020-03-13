@@ -54,19 +54,22 @@
 
     <modal :show="showPageInputModal" @close="showPageInputModal = false">
       <div class="page-input-modal-title">
-        <span>跳转页码{{ totalPages > 0 ? '（1~' + totalPages + '）': '' }}</span>
+        <span>跳转页码{{ totalPages > 0 ? '（1 ~ ' + totalPages + '）': '' }}：</span>
       </div>
       <div class="page-input-modal-input">
-        <input type="number" v-model="jumpPage" />
+        <input type="number" v-model="jumpPage" @keyup.enter="handlePageJump"/>
       </div>
       <div class="page-input-modal-btns">
-        <btn class="page-input-cancel-btn" @click="showPageInputModal = !showPageInputModal">取消</btn>
+        <btn class="page-input-cancel-btn" @click="showPageInputModal = false">取消</btn>
         <btn class="page-input-confirm-btn" type="blue" @click="handlePageJump">确认</btn>
       </div>
     </modal>
 
     <transition name="functions-trans">
       <div class="functions" v-show="isFunctionsShow">
+        <router-link tag="div" class="function" :to="{name: 'setting'}">
+          <icon icon="cog" />
+        </router-link>
         <router-link tag="div" class="function" :to="{name: 'user'}">
           <icon icon="user" />
         </router-link>
@@ -80,7 +83,7 @@
     </transition>
 
     <bottom-bar class="status-bar">
-      <div class="page-info" @click="showPageInputModal = totalPages > 0 ? true: false">
+      <div class="page-info" @click="handlePageInfoClick">
         <div class="page-number">
           <span>{{ parseInt(searchParams.page) + 1 }}</span>
         </div>
@@ -125,7 +128,7 @@ export default {
   mounted() {
     let searchParams = { ...defaults.searchParams }
     for (let key of Object.keys(searchParams)) {
-      if (this.$route.query[key] != undefined) {
+      if (this.$route.query[key] !== undefined) {
         searchParams[key] = this.$route.query[key]
       }
     }
@@ -142,7 +145,7 @@ export default {
 
       isFunctionsShow: false,
       isLoading: false,
-      showPageInputModal: false
+      showPageInputModal: false,
     }
   },
   methods: {
@@ -188,6 +191,10 @@ export default {
     },
     handleGalleryTouchStart() {
       this.isFunctionsShow = false
+    },
+    handlePageInfoClick() {
+      this.showPageInputModal = this.totalPages > 0
+      this.jumpPage = this.searchParams ? parseInt(this.searchParams.page) + 1 : 1
     },
     handlePageJump() {
       if (this.jumpPage < 1 || this.jumpPage > this.totalPages) {
@@ -305,7 +312,7 @@ export default {
   right: 10px;
   bottom: 50px;
   padding: 5px;
-  transition: bottom 0.2s ease-in-out;
+  transition: transform 0.2s ease;
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -326,11 +333,12 @@ export default {
 
 .function:active {
   background-color: #ddd;
+  box-shadow: none;
 }
 
 .functions-trans-enter,
 .functions-trans-leave-to {
-  bottom: -30px;
+  transform: translateY(80px);
 }
 
 .status-bar {
@@ -355,7 +363,7 @@ export default {
 }
 
 .function-btn .icon {
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease;
 }
 
 .function-btn .icon.open {

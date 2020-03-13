@@ -1,7 +1,7 @@
 <template>
   <transition name="loading-trans">
     <div class="loading" v-show="show">
-      <icon icon="circle-notch" class="fa-spin"/> 
+      <icon icon="circle-notch" class="fa-spin" />
     </div>
   </transition>
 </template>
@@ -35,11 +35,11 @@ export default {
   background-color: #fff;
   border: 2px solid #567;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease;
 }
 
 .loading-trans-enter,
 .loading-trans-leave-to {
-  transform: translateY(-40px);
+  transform: translateY(-35px);
 }
 </style>

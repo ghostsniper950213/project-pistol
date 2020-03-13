@@ -27,7 +27,10 @@ import {
   faTasks,
   faRedo,
   faPlay,
-  faBookReader
+  faBookReader,
+  faInfoCircle,
+  faFileImage,
+  faCog
 } from '@fortawesome/free-solid-svg-icons'
 library.add(
   faTags,
@@ -51,7 +54,10 @@ library.add(
   faTasks,
   faRedo,
   faPlay,
-  faBookReader
+  faBookReader,
+  faInfoCircle,
+  faFileImage,
+  faCog
 )
 
 export default {
@@ -59,12 +65,7 @@ export default {
   components: {
     FontAwesomeIcon
   },
-  props: ['icon'],
-  methods: {
-    test() {
-      alert(1)
-    }
-  }
+  props: ['icon']
 }
 </script>
 

@@ -1,5 +1,6 @@
 package cloud.chenh.bolt.data.dao;
 
+import cloud.chenh.bolt.constant.GalleryConstants;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -10,13 +11,34 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class GalleryBlockTagDao {
 
     private static final String RECORD_LOCALE = "./data/blocked_tags.json";
 
+
+    private AtomicBoolean readWriteLock = new AtomicBoolean(false);
+
+    private void lock() {
+        try {
+            while (readWriteLock.get()) {
+                TimeUnit.MILLISECONDS.sleep(GalleryConstants.LOCK_WAIT);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        readWriteLock.set(true);
+    }
+
+    private void unlock() {
+        readWriteLock.set(false);
+    }
+
     private List<String> read() {
+        lock();
         try {
             File file = new File(RECORD_LOCALE);
             if (!file.exists()) {
@@ -26,10 +48,13 @@ public class GalleryBlockTagDao {
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        } finally {
+            unlock();
         }
     }
 
     private void write(List<String> tags) {
+        lock();
         try {
             FileUtils.writeStringToFile(
                     new File(RECORD_LOCALE),
@@ -38,6 +63,8 @@ public class GalleryBlockTagDao {
             );
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            unlock();
         }
     }
 

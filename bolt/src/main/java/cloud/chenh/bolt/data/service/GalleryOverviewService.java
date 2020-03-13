@@ -2,6 +2,7 @@ package cloud.chenh.bolt.data.service;
 
 import cloud.chenh.bolt.constant.GalleryConstants;
 import cloud.chenh.bolt.data.model.GalleryOverview;
+import cloud.chenh.bolt.data.model.GalleryTag;
 import cloud.chenh.bolt.data.model.SimplePage;
 import cloud.chenh.bolt.data.parser.GalleryOverviewParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class GalleryOverviewService {
@@ -19,6 +21,9 @@ public class GalleryOverviewService {
 
     @Autowired
     private GalleryTagService galleryTagService;
+
+    @Autowired
+    private GalleryDetailService galleryDetailService;
 
     @Autowired
     private GalleryDownloadService galleryDownloadService;
@@ -33,6 +38,7 @@ public class GalleryOverviewService {
 
         SimplePage<GalleryOverview> page = GalleryOverviewParser.parse(html);
         List<String> blockedTags = galleryTagService.getBlockedTags();
+
         page.getElements().removeIf(gallery -> {
             List<String> tags = gallery.getTags();
             for (String tag : tags) {

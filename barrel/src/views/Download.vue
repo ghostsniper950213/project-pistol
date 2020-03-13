@@ -2,7 +2,7 @@
   <div id="download">
     <loading v-show="isLoading" />
 
-    <scroller class="downloads" ref="downloads" @scroll="handleScroll">
+    <scroller class="downloads" ref="downloads">
       <router-link
         tag="div"
         class="download"

@@ -1,5 +1,6 @@
 package cloud.chenh.bolt.data.web;
 
+import cloud.chenh.bolt.data.model.OperationResult;
 import cloud.chenh.bolt.data.service.GalleryImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,17 @@ public class ImageApi {
     @GetMapping("local")
     public void localImage(@RequestParam String path, HttpServletResponse response) {
         galleryImageService.writeLocalImage(path, response);
+    }
+
+    @GetMapping("cache/clear")
+    public OperationResult clearCache() {
+        galleryImageService.clearCache();
+        return OperationResult.success("清理成功");
+    }
+
+    @GetMapping("cache/size")
+    public OperationResult cacheSize() {
+        return OperationResult.success(galleryImageService.getCacheSize());
     }
 
 }

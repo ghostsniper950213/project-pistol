@@ -1,5 +1,6 @@
 package cloud.chenh.bolt.data.dao;
 
+import cloud.chenh.bolt.constant.GalleryConstants;
 import cloud.chenh.bolt.data.model.GalleryDownload;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +22,25 @@ public class GalleryDownloadDao {
 
     private static final String RECORD_LOCALE = "./data/download.json";
 
+    private AtomicBoolean readWriteLock = new AtomicBoolean(false);
+
+    private void lock() {
+        try {
+            while (readWriteLock.get()) {
+                TimeUnit.MILLISECONDS.sleep(GalleryConstants.LOCK_WAIT);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        readWriteLock.set(true);
+    }
+
+    private void unlock() {
+        readWriteLock.set(false);
+    }
+
     private List<GalleryDownload> read() {
+        lock();
         try {
             File file = new File(RECORD_LOCALE);
             if (!file.exists()) {
@@ -29,14 +50,19 @@ public class GalleryDownloadDao {
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        } finally {
+            unlock();
         }
     }
 
     private void write(List<GalleryDownload> galleryDownloads) {
+        lock();
         try {
             FileUtils.writeStringToFile(new File(RECORD_LOCALE), JSONObject.toJSONString(galleryDownloads), Charset.defaultCharset());
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            unlock();
         }
     }
 

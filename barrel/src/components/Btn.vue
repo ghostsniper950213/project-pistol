@@ -24,6 +24,7 @@ export default {
 
 .btn:active {
   background-color: #ccc;
+  box-shadow: none;
 }
 
 .btn.blue {

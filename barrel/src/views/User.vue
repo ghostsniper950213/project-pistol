@@ -4,34 +4,34 @@
 
     <scroller class="user-form">
       <div class="login-title">
-        <span>使用用户名与密码获取Cookie：</span>
+        <span>使用用户名与密码获取 Cookie：</span>
       </div>
       <div class="login-part">
         <div class="login-ipt-group">
-          <ipt icon="user" type="text" v-model="username" />
+          <ipt icon="user" type="text" v-model="username" @keyup.enter.native="handleLogin" />
         </div>
         <div class="login-ipt-group">
-          <ipt icon="lock" type="password" v-model="password" />
+          <ipt icon="lock" type="password" v-model="password" @keyup.enter.native="handleLogin" />
         </div>
       </div>
       <div class="login-btns">
         <btn class="login-btn" type="blue" @click="handleLogin" :disabled="isLoading">获取</btn>
       </div>
       <div class="login-title">
-        <span>或者直接填写Cookie：</span>
+        <span>或者直接填写 Cookie：</span>
       </div>
       <div class="cookie-part">
         <div class="cookie-ipt-group">
           <label>ipb_member_id：</label>
-          <input type="text" v-model="ipb_member_id" />
+          <input type="text" v-model="ipb_member_id" @keyup.enter="handleSaveCookies"/>
         </div>
         <div class="cookie-ipt-group">
           <label>ipb_pass_hash：</label>
-          <input type="text" v-model="ipb_pass_hash" />
+          <input type="text" v-model="ipb_pass_hash" @keyup.enter="handleSaveCookies"/>
         </div>
         <div class="cookie-ipt-group">
           <label>igneous：</label>
-          <input type="text" v-model="igneous" />
+          <input type="text" v-model="igneous" @keyup.enter="handleSaveCookies"/>
         </div>
       </div>
       <div class="finish-btns">
@@ -160,7 +160,13 @@ export default {
 }
 
 .login-title {
-  padding: 10px;
+  padding: 0 10px;
+  line-height: 40px;
+  margin-top: 20px;
+}
+
+.login-title:first-of-type {
+  margin-top: 0;
 }
 
 .login-part {
@@ -185,7 +191,6 @@ export default {
 .login-btns {
   padding: 0 10px;
   text-align: right;
-  margin-bottom: 10px;
 }
 
 .logout-btn {

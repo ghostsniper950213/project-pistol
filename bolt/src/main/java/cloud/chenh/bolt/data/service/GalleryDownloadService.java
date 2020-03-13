@@ -2,6 +2,7 @@ package cloud.chenh.bolt.data.service;
 
 import cloud.chenh.bolt.constant.GalleryConstants;
 import cloud.chenh.bolt.data.dao.GalleryDownloadDao;
+import cloud.chenh.bolt.data.model.GalleryCache;
 import cloud.chenh.bolt.data.model.GalleryDetail;
 import cloud.chenh.bolt.data.model.GalleryDownload;
 import cloud.chenh.bolt.data.parser.GalleryDetailParser;
@@ -16,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,9 @@ public class GalleryDownloadService {
 
     @Autowired
     private HttpClientService httpClientService;
+
+    @Autowired
+    private GalleryImageService galleryImageService;
 
     public List<GalleryDownload> getAllSorted() {
         List<GalleryDownload> galleryDownloads = galleryDownloadDao.get();
@@ -230,6 +236,8 @@ public class GalleryDownloadService {
             }
         }
 
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        executorService.shutdown();
         for (int i = 0; i < imagePages.length; i++) {
             if (galleryDownload.getImages()[i] != null) {
                 continue;
@@ -255,8 +263,14 @@ public class GalleryDownloadService {
                             i,
                             FilenameUtils.getExtension(imageUrl)
                     );
-                    InputStream imageStream = httpClientService.doGetStream(imageUrl, new HashMap<>());
-                    writeStreamAfterCheck(galleryDownload, imageStream, image);
+                    GalleryCache galleryCache = galleryImageService.getCache(imageUrl);
+                    if (galleryCache != null) {
+                        checkAlive(galleryDownload);
+                        FileUtils.moveFile(new File(galleryCache.getPath()), new File(image));
+                    } else {
+                        InputStream imageStream = httpClientService.doGetStream(imageUrl, new HashMap<>());
+                        writeStreamAfterCheck(galleryDownload, imageStream, image);
+                    }
                     galleryDownload.getImages()[i] = image;
                     saveAfterCheck(galleryDownload);
                     break;

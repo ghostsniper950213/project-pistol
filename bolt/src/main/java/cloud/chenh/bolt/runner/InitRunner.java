@@ -17,7 +17,7 @@ public class InitRunner implements ApplicationRunner {
     private HttpClientService httpClientService;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         httpClientService.init();
         galleryDownloadService.downloadNext();
     }

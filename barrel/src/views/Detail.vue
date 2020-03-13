@@ -92,7 +92,7 @@
     </scroller>
 
     <modal :show="clickedTag" @close="clickedTag = ''">
-      <div class="tag-block-modal-title">{{ clickedTag }}</div>
+      <div class="tag-block-modal-title">{{ clickedTag || "标签" }}</div>
       <div class="tag-block-modal-btns">
         <btn class="tag-block-cancel-btn" @click="clickedTag = ''">取消</btn>
         <btn class="tag-block-block-btn" type="red" @click="handleBlockTag">屏蔽</btn>

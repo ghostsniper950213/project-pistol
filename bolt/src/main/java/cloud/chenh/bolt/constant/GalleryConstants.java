@@ -23,4 +23,6 @@ public class GalleryConstants {
 
     public static final Integer RETRY_AFTER_SECOND = 5;
 
+    public static final Long LOCK_WAIT = 10L;
+
 }

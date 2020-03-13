@@ -14,7 +14,7 @@
         :class="{'animate': animate}"
         v-for="i of totalElements"
         :key="i"
-        :ref="i === 1? 'firstSlide' : null"
+        :ref="i === 1 ? 'firstSlide' : null"
       >
         <img
           v-if="download"
@@ -103,9 +103,7 @@ export default {
 
           if (this.pageNumber < this.totalPages - 1) {
             this.pageNumber = this.pageNumber + 1
-            setTimeout(() => {
-              this.fetchImages(false)
-            }, 5000)
+            this.fetchImages(false)
           }
         })
         .catch(error => {
@@ -271,7 +269,7 @@ export default {
 }
 
 .slide.animate {
-  transition: margin-left 0.2s ease-in-out;
+  transition: margin-left 0.2s ease;
 }
 
 .slide img {
@@ -335,6 +333,6 @@ export default {
 }
 
 .dragger.animate {
-  transition: left 0.2s ease-in-out;
+  transition: left 0.2s ease;
 }
 </style>

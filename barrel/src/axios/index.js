@@ -2,8 +2,6 @@ import axios from 'axios'
 
 // const baseRestUrl = 'http://192.168.123.192:8848/api/'
 // const baseWsUrl = 'ws://192.168.123.192:8848/ws'
-// const baseRestUrl = 'http://172.20.10.4:8848/api/'
-// const baseWsUrl = 'ws://172.20.10.4:8848/ws'
 const baseRestUrl = 'http://' + window.location.host + '/api/'
 const baseWsUrl = 'ws://' + window.location.host + '/ws'
 
@@ -26,7 +24,6 @@ const urls = {
     remove: baseRestUrl + '/download/remove',
     resume: baseRestUrl + '/download/resume',
     pause: baseRestUrl + '/download/pause',
-    update: baseRestUrl + '/download/update',
     redownload: baseRestUrl + '/download/redownload',
   },
   tag: {
@@ -37,6 +34,11 @@ const urls = {
   image: {
     image: baseRestUrl + '/image',
     localImage: baseRestUrl + '/image/local',
+    clearCache: baseRestUrl + '/image/cache/clear',
+    cacheSize: baseRestUrl + '/image/cache/size',
+  },
+  app: {
+    version: baseRestUrl + '/app/version'
   }
 }
 

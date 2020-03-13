@@ -40,13 +40,26 @@
       </div>
       <div class="search-title">
         <icon icon="images" />
-        <span>张数</span>
+        <span>页数</span>
       </div>
       <div class="search-pages-row">
-        <div class="flex-input-container"><input type="number" class="search-pages" v-model.number="searchPagesMin" /></div>
-        
+        <div class="flex-input-container">
+          <input
+            type="number"
+            class="search-pages"
+            v-model.number="searchPagesMin"
+            @keyup.enter="handleConfirm"
+          />
+        </div>
         <div class="search-pages-split">-</div>
-        <div  class="flex-input-container"><input type="number" class="search-pages" v-model.number="searchPagesMax" /></div>
+        <div class="flex-input-container">
+          <input
+            type="number"
+            class="search-pages"
+            v-model.number="searchPagesMax"
+            @keyup.enter="handleConfirm"
+          />
+        </div>
       </div>
       <div class="search-btns-row">
         <btn class="reset-btn" @click="resetSearch">重置</btn>
@@ -76,7 +89,7 @@ export default {
   mounted() {
     let searchParams = { ...defaults.searchParams }
     for (let key of Object.keys(searchParams)) {
-      if (this.$route.query[key] != undefined) {
+      if (this.$route.query[key] !== undefined) {
         searchParams[key] = this.$route.query[key]
       }
     }
@@ -184,7 +197,7 @@ export default {
   margin: 2px;
   padding: 0 10px;
   line-height: 25px;
-  border-radius: 5px;
+  border-radius: 13px;
   opacity: 0.5;
 }
 
@@ -229,7 +242,7 @@ export default {
   padding: 0 10px;
 }
 
-.flex-input-container:first-of-type .search-pages{
+.flex-input-container:first-of-type .search-pages {
   border-radius: 5px 0 0 5px;
 }
 
@@ -252,7 +265,7 @@ export default {
 }
 
 .search-btns-row {
-  margin:  20px 10px 10px 10px;
+  margin: 20px 10px 10px 10px;
   text-align: right;
 }
 
