@@ -23,11 +23,7 @@ Tags cannot be completely blocked.
 
 ### 截图 | Screenshots
 <div>
-  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/home.jpg" width="200"/>
-  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/detail.jpg" width="200"/> 
-  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/comment.jpg" width="200"/> 
-  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/read.jpg" width="200"/> 
-  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/download.jpg" width="200"/>
+  <img src="https://github.com/chenh96/project-pistol/blob/master/screenshots/screenshot.jpg"/>
 </div>
 
 ### 建议 | Advise
