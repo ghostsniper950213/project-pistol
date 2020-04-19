@@ -221,7 +221,7 @@ export default {
     },
     errorImg() {
       return require('@/assets/error.png')
-    }
+    },
   }
 }
 </script>

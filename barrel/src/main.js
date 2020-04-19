@@ -9,7 +9,7 @@ import loadingImage from './assets/loading.png'
 
 Vue.config.productionTip = false
 
-Vue.use(Navigation, {router})
+Vue.use(Navigation, { router })
 
 Vue.use(VueLazyload, {
   error: errorImage,

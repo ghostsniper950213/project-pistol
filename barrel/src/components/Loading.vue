@@ -1,7 +1,7 @@
 <template>
   <transition name="loading-trans">
     <div class="loading" v-show="show">
-      <icon icon="circle-notch" class="fa-spin" />
+      <icon icon="circle-notch" class="fa-spin"/>
     </div>
   </transition>
 </template>
@@ -26,12 +26,11 @@ export default {
   left: 0;
   right: 0;
   margin: auto;
-  padding-left: 0.5px;
-  width: 30px;
-  height: 30px;
-  line-height: 26px;
+  width: 30.333333333px;
+  height: 30.333333333px;
+  line-height: 26.166666666px;
   text-align: center;
-  border-radius: 15px;
+  border-radius: 20px;
   background-color: #fff;
   border: 2px solid #567;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

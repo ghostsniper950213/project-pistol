@@ -7,8 +7,6 @@ import javax.websocket.OnError;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import java.io.EOFException;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,10 +31,7 @@ public class DownloadWs {
 
     @OnError
     public void onError(Throwable throwable) {
-        if (throwable instanceof EOFException) {
-            return;
-        }
-        throwable.printStackTrace();
+        // DO NOTHING
     }
 
     public void sendMessage(String message) {
@@ -45,7 +40,7 @@ public class DownloadWs {
                 sessions.parallelStream().forEach(session -> {
                     try {
                         session.getBasicRemote().sendText(message);
-                    } catch (IOException ignored) {
+                    } catch (Exception ignored) {
                     }
                 });
             } finally {

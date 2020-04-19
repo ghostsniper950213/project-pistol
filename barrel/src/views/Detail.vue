@@ -85,7 +85,7 @@
             </div>
           </div>
           <div class="comment-content">
-            <span v-html="comment.content"></span>
+            <component :is="replacedComment(comment.content)" />
           </div>
         </div>
       </div>
@@ -206,6 +206,26 @@ export default {
         .catch(error => {
           this.isLoading = false
         })
+    },
+    replacedComment(content) {
+      const linkRegex = /<a href="https?:\/\/e[x|-]hentai\.org\/g\/[0-9]+\/[0-9a-zA-Z]+\/?.*">https?:\/\/e[x|-]hentai\.org\/g\/[0-9]+\/[0-9a-zA-Z]+\/?.*<\/a>/i
+      const urlRegex = /https?:\/\/e[x|-]hentai\.org\/g\/[0-9]+\/[0-9a-zA-Z]+\/?/i
+      // const urlRegex = /href=".*?">/i
+      
+      while (1) {
+        if (content.search(linkRegex) < 0) {
+          break
+        }
+        let link = linkRegex.exec(content)
+        let href = urlRegex.exec(link)
+        content = content.replace(
+          link,
+          `<router-link style="text-decoration:underline; color:#3478f6" tag="div" :to="{name: 'detail', query: {detailUrl: '${href}'}}">${href}</router-link>`
+        )
+      }
+      return {
+        template: `<span>${content}</span>`
+      }
     },
     handleSearchTag() {
       let tagName = this.clickedTag.split(':')[0]

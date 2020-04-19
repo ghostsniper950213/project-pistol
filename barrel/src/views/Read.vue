@@ -2,16 +2,13 @@
   <div id="read">
     <loading v-show="isLoading" />
 
-    <div
-      class="swiper"
-      ref="swiper"
-      @touchstart="handleSlideStart"
-      @touchmove="handleSlideMove"
-      @touchend="handleSlideEnd"
-    >
+    <div class="swiper" ref="swiper" :class="readMode" @scroll="handleScroll">
       <div
         class="slide"
-        :class="{'animate': animate}"
+        :class="[{'animate': animate && !readModeChanging}, readMode]"
+        @touchstart="handleSlideStart"
+        @touchmove="handleSlideMove"
+        @touchend="handleSlideEnd"
         v-for="i of totalElements"
         :key="i"
         :ref="i === 1 ? 'firstSlide' : null"
@@ -40,11 +37,16 @@
           <div class="dragger" ref="dragger" :class="{'animate': draggerAnimate}"></div>
         </div>
       </div>
+
+      <button class="read-mode-btn" @click="handleReadChange">
+        <icon icon="arrows-alt-h" :class="readMode" />
+      </button>
     </bottom-bar>
   </div>
 </template>
 
 <script>
+import Icon from '@/components/Icon'
 import Loading from '@/components/Loading'
 import BottomBar from '@/components/BottomBar'
 
@@ -53,6 +55,7 @@ import { axios, urls, requestLocalImage, requestViewImage } from '@/axios'
 export default {
   name: 'Read',
   components: {
+    Icon,
     Loading,
     BottomBar
   },
@@ -76,7 +79,10 @@ export default {
       prevX: 0,
       dx: 0,
       animate: true,
-      draggerAnimate: true
+      draggerAnimate: true,
+
+      readMode: 'horizontal',
+      readModeChanging: false
     }
   },
   methods: {
@@ -114,6 +120,10 @@ export default {
       this.prevX = e.touches[0].screenX
     },
     handleSlideMove(e) {
+      if (this.readMode === 'vertical') {
+        return
+      }
+
       this.animate = false
 
       if (!this.firstSlide) {
@@ -134,6 +144,11 @@ export default {
       this.prevX = nextX
     },
     handleSlideEnd(e) {
+      if (this.readMode === 'vertical') {
+        return
+      }
+
+      this.readModeChanging = false
       this.animate = true
 
       if (!this.firstSlide) {
@@ -170,6 +185,33 @@ export default {
 
       this.stageToIndex()
     },
+    handleScroll(e) {
+      if (this.readMode === 'horizontal') {
+        return
+      }
+      let scrollTop = e.target.scrollTop
+      let index = 0
+      let swiper = this.$refs.swiper
+      if (scrollTop + swiper.clientHeight >= swiper.scrollHeight) {
+        this.currentIndex = this.imgs.length - 1
+        this.stageToIndex()
+        return
+      }
+      for (let slide of swiper.children) {
+        if (slide.offsetTop - slide.clientHeight / 2 > scrollTop) {
+          if (index <= 1) {
+            this.currentIndex = 0
+          } else if (index >= this.imgs.length) {
+            this.currentIndex = this.imgs.length - 1
+          } else {
+            this.currentIndex = index - 1
+          }
+          this.stageToIndex()
+          break
+        }
+        index++
+      }
+    },
     calcPage() {
       let dragger = this.$refs.dragger
       let left = dragger.style.left
@@ -189,7 +231,7 @@ export default {
     handleStageMove(e) {
       this.draggerAnimate = false
 
-      if (this.totalElements <= 0) {
+      if (this.readMode === 'vertical' || this.totalElements <= 0) {
         return
       }
 
@@ -204,16 +246,44 @@ export default {
       this.currentIndex = this.calcPage()
     },
     handleStageEnd() {
+      this.readModeChanging = false
       this.draggerAnimate = true
 
-      if (!this.firstSlide) {
+      if (this.readMode === 'vertical' || !this.firstSlide) {
         return
       }
 
       let clientWidth = this.firstSlide.clientWidth
       this.firstSlide.style.marginLeft = -this.currentIndex * clientWidth + 'px'
-
       this.stageToIndex()
+    },
+    handleReadChange() {
+      if (this.readMode === 'horizontal') {
+        this.firstSlide.style.margin = 0
+        this.readMode = 'vertical'
+      } else {
+        this.readMode = 'horizontal'
+      }
+      this.readModeChanging = true
+      this.$nextTick(() => {
+        if (this.readMode === 'horizontal') {
+          let clientWidth = this.firstSlide.clientWidth
+          this.firstSlide.style.marginLeft =
+            -this.currentIndex * clientWidth + 'px'
+        } else {
+          let swiper = this.$refs.swiper
+          let index = 0
+          let scrollTop = 0
+          for (let slide of swiper.children) {
+            if (index === this.currentIndex) {
+              scrollTop = slide.offsetTop
+              break
+            }
+            index++
+          }
+          swiper.scrollTop = scrollTop
+        }
+      })
     },
     handleImgError(e) {
       let img = e.srcElement
@@ -261,10 +331,21 @@ export default {
   white-space: nowrap;
 }
 
+.swiper.vertical {
+  overflow: scroll;
+}
+
 .slide {
   width: 100%;
   height: 100%;
   display: inline-block;
+  position: relative;
+}
+
+.slide.vertical {
+  height: auto;
+  margin: 0;
+  display: block;
   position: relative;
 }
 
@@ -281,6 +362,12 @@ export default {
   top: 0;
   bottom: 0;
   margin: auto;
+}
+
+.slide.vertical img {
+  width: 100%;
+  position: relative;
+  margin: 0;
 }
 
 .status-bar {
@@ -309,7 +396,7 @@ export default {
 
 .stage-container {
   flex: 1;
-  margin: 0 20px 0 10px;
+  margin: 0 10px;
 }
 
 .stage {
@@ -334,5 +421,13 @@ export default {
 
 .dragger.animate {
   transition: left 0.2s ease;
+}
+
+.read-mode-btn .icon {
+  transition: transform 0.2s ease;
+}
+
+.read-mode-btn .icon.vertical {
+  transform: rotateZ(90deg);
 }
 </style>

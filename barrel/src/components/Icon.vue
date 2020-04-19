@@ -30,7 +30,8 @@ import {
   faBookReader,
   faInfoCircle,
   faFileImage,
-  faCog
+  faCog,
+  faArrowsAltH
 } from '@fortawesome/free-solid-svg-icons'
 library.add(
   faTags,
@@ -57,7 +58,8 @@ library.add(
   faBookReader,
   faInfoCircle,
   faFileImage,
-  faCog
+  faCog,
+  faArrowsAltH
 )
 
 export default {
