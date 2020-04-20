@@ -321,7 +321,7 @@ export default {
 </script>
 
 <style scoped>
-.swiper {
+.swiper.horizontal {
   position: absolute;
   left: 0;
   right: 0;
@@ -332,10 +332,16 @@ export default {
 }
 
 .swiper.vertical {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  top: 0;
   overflow: scroll;
+  white-space: nowrap;
 }
 
-.slide {
+.slide.horizontal {
   width: 100%;
   height: 100%;
   display: inline-block;
@@ -343,7 +349,7 @@ export default {
 }
 
 .slide.vertical {
-  height: auto;
+  width: 100%;
   margin: 0;
   display: block;
   position: relative;
@@ -353,7 +359,7 @@ export default {
   transition: margin-left 0.2s ease;
 }
 
-.slide img {
+.slide.horizontal img {
   max-width: 100%;
   max-height: 100%;
   position: absolute;

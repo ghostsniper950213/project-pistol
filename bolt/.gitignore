@@ -6,7 +6,7 @@ target/
 /cache/
 /data/
 /download/
-/src/main/resources/static
+/src/main/resources/static/
 
 ### STS ###
 .apt_generated
