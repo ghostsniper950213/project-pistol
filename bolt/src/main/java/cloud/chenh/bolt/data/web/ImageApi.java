@@ -1,41 +1,42 @@
 package cloud.chenh.bolt.data.web;
 
-import cloud.chenh.bolt.data.model.OperationResult;
-import cloud.chenh.bolt.data.service.GalleryImageService;
+import cloud.chenh.bolt.data.service.GalleryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 
 @RestController
 @RequestMapping("api/image")
 public class ImageApi {
 
     @Autowired
-    private GalleryImageService galleryImageService;
+    private GalleryService galleryService;
 
-    @GetMapping
-    public void image(@RequestParam String url, HttpServletResponse response) {
-        galleryImageService.writeImage(url, response);
+    @GetMapping(produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public BufferedImage image(
+            @RequestParam String galleryUrl,
+            @RequestParam(required = false) Integer index,
+            @RequestParam(required = false) String imagePage
+    ) {
+        return galleryService.fetchImage(galleryUrl, index, imagePage);
     }
 
-    @GetMapping("local")
-    public void localImage(@RequestParam String path, HttpServletResponse response) {
-        galleryImageService.writeLocalImage(path, response);
+    @GetMapping(value = "thumb", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public BufferedImage thumb(
+            @RequestParam String galleryUrl,
+            @RequestParam String thumbUrl
+    ) {
+        return galleryService.fetchThumb(galleryUrl, thumbUrl);
     }
 
-    @GetMapping("cache/clear")
-    public OperationResult clearCache() {
-        galleryImageService.clearCache();
-        return OperationResult.success("清理成功");
-    }
-
-    @GetMapping("cache/size")
-    public OperationResult cacheSize() {
-        return OperationResult.success(galleryImageService.getCacheSize());
+    @GetMapping(value = "cover", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public BufferedImage cover(@RequestParam String galleryUrl, @RequestParam String coverUrl) {
+        return galleryService.fetchCover(galleryUrl, coverUrl);
     }
 
 }

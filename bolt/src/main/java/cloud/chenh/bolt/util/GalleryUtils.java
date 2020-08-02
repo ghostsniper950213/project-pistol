@@ -22,13 +22,13 @@ public class GalleryUtils {
         return style.substring(0, style.indexOf(")"));
     }
 
-    public static Object[] genGidList(String url) {
+    public static String getGid(String url) {
         // https://exhentai.org/g/1559821/afa245de62/
         List<String> parts = Arrays
                 .stream(url.split("/"))
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toList());
-        return new Object[]{Integer.parseInt(parts.get(parts.size() - 2)), parts.get(parts.size() - 1)};
+        return parts.get(parts.size() - 2) + "_" + parts.get(parts.size() - 1);
     }
 
 }
