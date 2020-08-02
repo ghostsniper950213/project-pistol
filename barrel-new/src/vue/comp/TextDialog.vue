@@ -52,7 +52,7 @@ export default {
 
 .text-dialog-cover-trans-enter-active,
 .text-dialog-cover-trans-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s;
 }
 
 .text-dialog-panel-trans-enter,

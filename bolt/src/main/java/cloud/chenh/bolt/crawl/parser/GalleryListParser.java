@@ -36,7 +36,7 @@ public class GalleryListParser {
     private static Gallery parseSingle(Element root) {
         String url = root.selectFirst(".gl1e a").attr("href");
         String coverUrl = root.selectFirst(".gl1e img").attr("src");
-        String category = root.selectFirst(".gl3e").child(0).text();
+        String category = root.selectFirst(".gl3e").child(0).text().replace(" ", "");
         String time = root.selectFirst(".gl3e").child(1).text();
         String ratingStyle = root.selectFirst(".gl3e").child(2).attr("style");
         String uploader = root.selectFirst(".gl3e").child(3).selectFirst("a").text();

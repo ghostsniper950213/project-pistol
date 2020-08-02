@@ -28,7 +28,7 @@ export default {
   /**
    * base url
    */
-  baseRequestUrl: 'http://192.168.1.136:8800/',
+  baseRequestUrl: 'http://192.168.100.100:8800/',
   
   // baseRequestUrl: getHttpAutoUrl()
 }

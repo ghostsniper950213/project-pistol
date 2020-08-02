@@ -21,6 +21,7 @@ export default {
   justify-content: center;
   height: 35px;
   line-height: 35px;
+  margin: 0;
   padding: 0 10px;
   border: none;
   border-radius: 5px;

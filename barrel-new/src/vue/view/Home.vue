@@ -14,7 +14,7 @@
                 <span>{{ gallery.category }}</span>
               </div>
               <div class="info-group">
-                <image-icon icon="pages" />
+                <image-icon icon="pages" size="14" />
                 <span>{{ gallery.pages }}</span>
               </div>
               <div class="info-group">
@@ -30,7 +30,7 @@
             </div>
             <div class="info-row">
               <div class="info-group">
-                <image-icon icon="time" size="15"/>
+                <image-icon icon="time" size="15" />
                 <span>{{ gallery.time }}</span>
               </div>
             </div>
@@ -43,6 +43,7 @@
           v-if="fetchingPage || searchParams.page < totalPages - 1"
           :icon="fetchingPage ? 'loading' : 'reload'"
           :rotate="fetchingPage"
+          size="18"
         />
         <span v-else>下面没有了</span>
       </div>
@@ -52,16 +53,19 @@
       <tool-bar-item width="60" @click.native="showPageNumberDialog = totalPages > 1">
         <page-number :pageNumber="searchParams.page + 1" :totalPages="totalPages" />
       </tool-bar-item>
-      <tool-bar-item>2</tool-bar-item>
+      <tool-bar-item>
+        <image-icon v-if="!searchParams.f_search" icon="search" size="15" />
+        <span v-else>{{ searchParams.f_search }}</span>
+      </tool-bar-item>
       <tool-bar-item width="60" @click.native="showFunctions = !showFunctions">
-        <image-icon :icon="showFunctions ? 'functionsActive' : 'functions'" />
+        <image-icon :icon="showFunctions ? 'functionsActive' : 'functions'" size="18" />
       </tool-bar-item>
     </tool-bar>
 
     <text-dialog :show="showPageNumberDialog">
       <text-dialog-row>跳转页码（1 ~ {{ totalPages }}）：</text-dialog-row>
       <text-dialog-row>
-        <text-input v-model="jumpPage" />
+        <text-input v-model="jumpPage" type="number" />
       </text-dialog-row>
       <text-dialog-row>
         <text-button @click="showPageNumberDialog = false">取消</text-button>
@@ -112,7 +116,13 @@ export default {
           params: this.searchParams,
         })
         .then((data) => {
-          this.galleries = this.galleries.concat(data.elements)
+          data.elements.forEach((element) => {
+            if (
+              this.galleries.filter((g) => g.url === element.url).length <= 0
+            ) {
+              this.galleries.push(element)
+            }
+          })
           this.totalPages = data.totalPages
           this.fetchingPage = false
         })
@@ -130,7 +140,7 @@ export default {
       }
     },
     handleNextPage() {
-      if (this.searchParams.page >= this.totalPages - 1) {
+      if (this.fetchingPage || this.searchParams.page >= this.totalPages - 1) {
         return
       }
 
@@ -162,6 +172,7 @@ export default {
 .cover-part {
   display: flex;
   width: 100px;
+  flex-shrink: 0;
   height: 100%;
   align-items: center;
   justify-content: center;
@@ -174,8 +185,8 @@ export default {
 
 .info-part {
   flex: 1;
-  height: 100%;
   margin-left: 10px;
+  width: 0;
 }
 
 .title {
@@ -191,16 +202,19 @@ export default {
 }
 
 .info {
-  margin-top: 5px;
-  height: 80px;
+  margin-top: 9px;
 }
 
 .info-row {
+  height: 20px;
+  overflow: hidden;
   margin-top: 5px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .info-group {
-  vertical-align: middle;
   display: inline-flex;
   align-items: center;
   background-color: #eee;
@@ -208,10 +222,14 @@ export default {
   padding: 0 10px 0 7.5px;
   margin-left: 5px;
   border-radius: 10px;
+  opacity: 0.6;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-.info-group * {
+.info-group span {
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .info-group:first-of-type {
@@ -219,7 +237,7 @@ export default {
 }
 
 .info-group .image-icon {
-  margin-right: 5px;
+  margin-right: 2.5px;
 }
 
 .tool-bar-item:active {

@@ -2,8 +2,9 @@ export default {
   searchParams: {
     page: 0,
     f_cats: 767,
-    // f_cats: 0,
-    f_search: '人体形态',
+    f_cats: 0,
+    // f_search: '人体形态',
+    f_search: '',
     f_spf: '',
     f_spt: '',
     f_srdd: 1,
@@ -20,12 +21,12 @@ export default {
       score: 4
     },
     {
-      name: 'Artist CG',
+      name: 'ArtistCG',
       color: '#d38f1d',
       score: 8
     },
     {
-      name: 'Game CG',
+      name: 'GameCG',
       color: '#6a936d',
       score: 16
     },
@@ -40,7 +41,7 @@ export default {
       score: 256
     },
     {
-      name: 'Image Set',
+      name: 'ImageSet',
       color: '#325ca2',
       score: 32
     },
@@ -50,7 +51,7 @@ export default {
       score: 64
     },
     {
-      name: 'Asian Porn',
+      name: 'AsianPorn',
       color: '#a23282',
       score: 128
     },
